@@ -20,9 +20,9 @@ namespace PullThroughDoc
 		private static readonly LocalizableString Title = new LocalizableResourceString(nameof(Resources.AnalyzerTitle), Resources.ResourceManager, typeof(Resources));
 		private static readonly LocalizableString MessageFormat = new LocalizableResourceString(nameof(Resources.AnalyzerMessageFormat), Resources.ResourceManager, typeof(Resources));
 		private static readonly LocalizableString Description = new LocalizableResourceString(nameof(Resources.AnalyzerDescription), Resources.ResourceManager, typeof(Resources));
-		private const string Category = "Naming";
+		private const string Category = "Design";
 
-		private static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true, description: Description);
+		private static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Info, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
@@ -30,22 +30,53 @@ namespace PullThroughDoc
 		{
 			// TODO: Consider registering other actions that act on syntax instead of or in addition to symbols
 			// See https://github.com/dotnet/roslyn/blob/master/docs/analyzers/Analyzer%20Actions%20Semantics.md for more information
-			context.RegisterSymbolAction(AnalyzeSymbol, SymbolKind.NamedType);
+			context.RegisterSymbolAction(AnalyzeSymbol, SymbolKind.Property, SymbolKind.Method);
 		}
 
 		private static void AnalyzeSymbol(SymbolAnalysisContext context)
 		{
-			// TODO: Replace the following code with your own analysis, generating Diagnostic objects for any issues you find
-			var namedTypeSymbol = (INamedTypeSymbol)context.Symbol;
-
-			// Find just those named type symbols with names containing lowercase letters.
-			if (namedTypeSymbol.Name.ToCharArray().Any(char.IsLower))
+			// Check if we can pull through the doc
+			if (CanPullThroughDoc(context.Symbol, context.CancellationToken))
 			{
-				// For all such symbols, produce a diagnostic.
-				var diagnostic = Diagnostic.Create(Rule, namedTypeSymbol.Locations[0], namedTypeSymbol.Name);
+				var diagnostic = Diagnostic.Create(Rule, context.Symbol.Locations[0], context.Symbol.Name);
 
 				context.ReportDiagnostic(diagnostic);
 			}
+		}
+
+		private static bool CanPullThroughDoc(ISymbol symbol, CancellationToken token)
+		{
+			// The containting type isn't an interface
+			INamedTypeSymbol containingType = symbol.ContainingType;
+			if (containingType.BaseType == null)
+			{
+				return false; // This is an interface
+			}
+
+			// Doesn't already have doc
+			string currentDoc = symbol.GetDocumentationCommentXml(cancellationToken: token);
+			if (!string.IsNullOrEmpty(currentDoc))
+			{
+				return false;
+			}
+
+			// Has a base symbol/interface method
+			ISymbol baseSymbol = symbol.GetBaseOrInterfaceMember();
+			if (baseSymbol == null)
+			{
+				return false;
+			}
+
+			// The base symbol should exist in this project
+			if (baseSymbol.DeclaringSyntaxReferences.IsEmpty)
+			{
+				return false;
+			}
+
+			// Base method has documentation
+			string baseDoc = baseSymbol.GetDocumentationCommentXml(cancellationToken: token);
+			return !string.IsNullOrEmpty(baseDoc);
+
 		}
 	}
 }
