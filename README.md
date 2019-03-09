@@ -15,7 +15,7 @@ interface IMyInterface
 And this class:
 
 ```C#
-interface MyClass : IMyInterface
+class MyClass : IMyInterface
 {
     public void DoSomething();
 }
@@ -24,7 +24,7 @@ interface MyClass : IMyInterface
 The code fix will allow you to pull through the documentation from the interface declaration to the class, resulting in this:
 
 ```C#
-interface MyClass : IMyInterface
+class MyClass : IMyInterface
 {
     /// <summary>
     /// This method does something
