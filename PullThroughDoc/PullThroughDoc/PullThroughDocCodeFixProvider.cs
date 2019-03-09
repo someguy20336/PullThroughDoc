@@ -69,11 +69,11 @@ namespace PullThroughDoc
 			}
 
 			// Just use the first syntax reference because who cares at this point
-			MemberDeclarationSyntax newMmembDecl = membDecl.WithTriviaFrom(overrideSymb.DeclaringSyntaxReferences[0].GetSyntax(cancellationToken));
+			MemberDeclarationSyntax newMembDecl = membDecl.WithTriviaFrom(overrideSymb.DeclaringSyntaxReferences[0].GetSyntax(cancellationToken));
 
 			// Produce a new document
 			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken);
-			SyntaxNode other = root.ReplaceNode(membDecl, newMmembDecl);
+			SyntaxNode other = root.ReplaceNode(membDecl, newMembDecl);
 			return document.WithSyntaxRoot(other);
 		}
 	}

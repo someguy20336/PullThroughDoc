@@ -36,7 +36,7 @@ namespace PullThroughDoc
 		private static void AnalyzeSymbol(SymbolAnalysisContext context)
 		{
 			// Check if we can pull through the doc
-			if (CanPullThroughDoc(context.Symbol, context.CancellationToken))
+			if (CanPullThroughDoc(context, context.CancellationToken))
 			{
 				var diagnostic = Diagnostic.Create(Rule, context.Symbol.Locations[0], context.Symbol.Name);
 
@@ -44,9 +44,10 @@ namespace PullThroughDoc
 			}
 		}
 
-		private static bool CanPullThroughDoc(ISymbol symbol, CancellationToken token)
+		private static bool CanPullThroughDoc(SymbolAnalysisContext context, CancellationToken token)
 		{
 			// The containting type isn't an interface
+			ISymbol symbol = context.Symbol;
 			INamedTypeSymbol containingType = symbol.ContainingType;
 			if (containingType.BaseType == null)
 			{
