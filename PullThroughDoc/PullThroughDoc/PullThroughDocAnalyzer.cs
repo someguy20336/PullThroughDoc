@@ -46,7 +46,7 @@ namespace PullThroughDoc
 
 		private static bool CanPullThroughDoc(SymbolAnalysisContext context, CancellationToken token)
 		{
-			// The containting type isn't an interface
+			// The containing type isn't an interface
 			ISymbol symbol = context.Symbol;
 			INamedTypeSymbol containingType = symbol.ContainingType;
 			if (containingType.BaseType == null)
