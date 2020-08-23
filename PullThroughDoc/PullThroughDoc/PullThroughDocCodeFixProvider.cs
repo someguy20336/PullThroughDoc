@@ -69,12 +69,37 @@ namespace PullThroughDoc
 			}
 
 			// Just use the first syntax reference because who cares at this point
-			MemberDeclarationSyntax newMembDecl = membDecl.WithTriviaFrom(overrideSymb.DeclaringSyntaxReferences[0].GetSyntax(cancellationToken));
+			var syntax = overrideSymb.DeclaringSyntaxReferences[0].GetSyntax(cancellationToken);
+			var trivia = RemoveRegionsAndDuplicateWhitespace(syntax);
+			MemberDeclarationSyntax newMembDecl = membDecl.WithLeadingTrivia(trivia);
 
 			// Produce a new document
 			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken);
 			SyntaxNode other = root.ReplaceNode(membDecl, newMembDecl);
 			return document.WithSyntaxRoot(other);
+		}
+
+		private IEnumerable<SyntaxTrivia> RemoveRegionsAndDuplicateWhitespace(SyntaxNode syntax)
+		{
+			// Remove regions
+			var nonRegion = syntax.GetLeadingTrivia().Where(tr => !tr.IsKind(SyntaxKind.RegionDirectiveTrivia)).ToList();
+			if (nonRegion.Count == 0)
+			{
+				return nonRegion;
+			}
+
+			// Cut out duplicate whitespace trivia that might result from removing regions
+			var newList = new List<SyntaxTrivia>() { nonRegion[0] };
+			for (int i = 1; i < nonRegion.Count; i++)
+			{
+				bool isDoubleWhitespace = nonRegion[i - 1].Kind() == nonRegion[i].Kind() && nonRegion[i].IsKind(SyntaxKind.WhitespaceTrivia);
+				if (!isDoubleWhitespace)
+				{
+					newList.Add(nonRegion[i]);
+				}
+			}
+
+			return newList;
 		}
 	}
 }

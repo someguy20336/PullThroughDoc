@@ -83,6 +83,72 @@ namespace PullThroughDoc.Test
 		}
 
 		[TestMethod]
+		public void Interface_MultiLineDocumentation_PullsThrough()
+		{
+			var test = @"
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using System.Diagnostics;
+
+    namespace ConsoleApplication1
+    {
+		interface IInterface 
+		{
+			/// <summary>Does A Thing </summary>
+			/// <param name=""param1"">parameter</param>
+			/// <returns>A string</returns>
+			string DoThing(string param1);
+		}
+        class TypeName : IInterface
+        {   
+			public string DoThing(string param1) {}
+        }
+    }";
+			var expected = new DiagnosticResult
+			{
+				Id = "PullThroughDoc",
+				Message = String.Format("Pull through documentation for {0}.", "DoThing"),
+				Severity = DiagnosticSeverity.Info,
+				Locations =
+					new[] {
+							new DiagnosticResultLocation("Test0.cs", 20, 18)
+						}
+			};
+
+			VerifyCSharpDiagnostic(test, expected);
+
+			var fixtest = @"
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using System.Diagnostics;
+
+    namespace ConsoleApplication1
+    {
+		interface IInterface 
+		{
+			/// <summary>Does A Thing </summary>
+			/// <param name=""param1"">parameter</param>
+			/// <returns>A string</returns>
+			string DoThing(string param1);
+		}
+        class TypeName : IInterface
+        {   
+			/// <summary>Does A Thing </summary>
+			/// <param name=""param1"">parameter</param>
+			/// <returns>A string</returns>
+			public string DoThing(string param1) {}
+        }
+    }";
+			VerifyCSharpFix(test, fixtest);
+		}
+
+		[TestMethod]
 		public void Interface_WithoutDocumentation_NoAnalyzer()
 		{
 			var test = @"
@@ -180,6 +246,71 @@ namespace PullThroughDoc.Test
 		{
 			/// <summary>Does A Thing </summary>
 			public virtual string DoThing() { }
+		}
+        class TypeName : BaseClass
+        {   
+			/// <summary>Does A Thing </summary>
+			public override string DoThing() {}
+        }
+    }";
+			VerifyCSharpFix(test, fixtest);
+		}
+
+
+		[TestMethod]
+		public void Regions_Documentation_ExcludingRegion()
+		{
+			var test = @"
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using System.Diagnostics;
+
+    namespace ConsoleApplication1
+    {
+		class BaseClass 
+		{
+			#region Properties
+			/// <summary>Does A Thing </summary>
+			public virtual string DoThing() { }
+			#endregion
+		}
+        class TypeName : BaseClass
+        {   
+			public override string DoThing() {}
+        }
+    }";
+			var expected = new DiagnosticResult
+			{
+				Id = "PullThroughDoc",
+				Message = String.Format("Pull through documentation for {0}.", "DoThing"),
+				Severity = DiagnosticSeverity.Info,
+				Locations =
+					new[] {
+							new DiagnosticResultLocation("Test0.cs", 20, 27)
+						}
+			};
+
+			VerifyCSharpDiagnostic(test, expected);
+
+			var fixtest = @"
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using System.Diagnostics;
+
+    namespace ConsoleApplication1
+    {
+		class BaseClass 
+		{
+			#region Properties
+			/// <summary>Does A Thing </summary>
+			public virtual string DoThing() { }
+			#endregion
 		}
         class TypeName : BaseClass
         {   
