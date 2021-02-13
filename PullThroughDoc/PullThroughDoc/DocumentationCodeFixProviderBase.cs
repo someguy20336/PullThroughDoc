@@ -63,7 +63,7 @@ namespace PullThroughDoc
 
 			// Just use the first syntax reference because who cares at this point
 			var syntax = overrideSymb.DeclaringSyntaxReferences[0].GetSyntax(cancellationToken);
-			IEnumerable<SyntaxTrivia> trivia = GetTriviaFromMember(syntax);
+			IEnumerable<SyntaxTrivia> trivia = GetTriviaFromMember(syntax, membDecl);
 			MemberDeclarationSyntax newMembDecl = membDecl.WithLeadingTrivia(trivia);
 
 			// Produce a new document
@@ -72,6 +72,6 @@ namespace PullThroughDoc
 			return document.WithSyntaxRoot(other);
 		}
 
-		protected abstract IEnumerable<SyntaxTrivia> GetTriviaFromMember(SyntaxNode baseMember);
+		protected abstract IEnumerable<SyntaxTrivia> GetTriviaFromMember(SyntaxNode baseMember, SyntaxNode targetMember);
 	}
 }

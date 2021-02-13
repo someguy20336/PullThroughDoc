@@ -12,7 +12,7 @@ namespace PullThroughDoc
 	{
 		protected override string Title => "Pull Through Documentation";
 
-		protected override IEnumerable<SyntaxTrivia> GetTriviaFromMember(SyntaxNode syntax)
+		protected override IEnumerable<SyntaxTrivia> GetTriviaFromMember(SyntaxNode syntax, SyntaxNode targetMember)
 		{
 			// Remove regions
 			var nonRegion = syntax.GetLeadingTrivia().Where(tr => !tr.IsKind(SyntaxKind.RegionDirectiveTrivia)).ToList();
