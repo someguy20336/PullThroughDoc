@@ -16,7 +16,7 @@ namespace PullThroughDoc.Test
 			{
 				Id = PullThroughDocAnalyzer.PullThroughDocDiagId,
 				Message = String.Format("Pull through documentation for {0}.", member),
-				Severity = DiagnosticSeverity.Info,
+				Severity = DiagnosticSeverity.Hidden,
 				Locations =
 					new[] {
 							new DiagnosticResultLocation("Test0.cs", line, col)
