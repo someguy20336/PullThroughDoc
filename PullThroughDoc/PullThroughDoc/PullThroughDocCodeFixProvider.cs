@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -10,7 +11,22 @@ namespace PullThroughDoc
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(PullThroughDocCodeFixProvider)), Shared]
 	public class PullThroughDocCodeFixProvider : DocumentationCodeFixProviderBase
 	{
-		protected override string TitleForDiagnostic(string diagId) => "Pull Through Documentation";
+		public override ImmutableArray<string> FixableDiagnosticIds
+		{
+			get { return ImmutableArray.Create(PullThroughDocAnalyzer.PullThroughDocDiagId, PullThroughDocAnalyzer.SwapToPullThroughDocId); }
+		}
+
+		protected override string TitleForDiagnostic(string diagId)
+		{
+			switch (diagId)
+			{
+				case PullThroughDocAnalyzer.SwapToPullThroughDocId:
+					return "Change to <summary>";
+				case PullThroughDocAnalyzer.PullThroughDocDiagId:
+				default:
+					return "Pull Through Documentation";
+			}
+		}
 
 		protected override IEnumerable<SyntaxTrivia> GetTriviaFromMember(SyntaxNode syntax, SyntaxNode targetMember)
 		{

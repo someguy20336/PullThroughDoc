@@ -10,22 +10,30 @@ namespace PullThroughDoc
 	{
 		public const string PullThroughDocDiagId = "PullThroughDoc01";
 		public const string SwapToInheritDocId = "PullThroughDoc02";
+		public const string SwapToPullThroughDocId = "PullThroughDoc03";
+		private const string Category = "Design";
 
 		// You can change these strings in the Resources.resx file. If you do not want your analyzer to be localize-able, you can use regular strings for Title and MessageFormat.
 		// See https://github.com/dotnet/roslyn/blob/master/docs/analyzers/Localizing%20Analyzers.md for more on localization
-		private static readonly LocalizableString Title = new LocalizableResourceString(nameof(Resources.AnalyzerTitle), Resources.ResourceManager, typeof(Resources));
-		private static readonly LocalizableString MessageFormat = new LocalizableResourceString(nameof(Resources.AnalyzerMessageFormat), Resources.ResourceManager, typeof(Resources));
-		private static readonly LocalizableString Description = new LocalizableResourceString(nameof(Resources.AnalyzerDescription), Resources.ResourceManager, typeof(Resources));
-		private const string Category = "Design";
+		private static readonly LocalizableString Title = new LocalizableResourceString(nameof(Resources.PullThroghDocTitle), Resources.ResourceManager, typeof(Resources));
+		private static readonly LocalizableString MessageFormat = new LocalizableResourceString(nameof(Resources.PullThroughDocMessageFormat), Resources.ResourceManager, typeof(Resources));
+		private static readonly LocalizableString Description = new LocalizableResourceString(nameof(Resources.PullThroughDocDescription), Resources.ResourceManager, typeof(Resources));
+		
 
 		private static DiagnosticDescriptor PullThroughDocRule 
 			= new DiagnosticDescriptor(PullThroughDocDiagId, Title, MessageFormat, Category, DiagnosticSeverity.Info, isEnabledByDefault: true, description: Description);
 
 		private static DiagnosticDescriptor SwapToInheritDocRule
-			= new DiagnosticDescriptor(SwapToInheritDocId, "Replace With <inheritdoc/>", MessageFormat, Category, DiagnosticSeverity.Hidden, isEnabledByDefault: true, description: Description);
+			= new DiagnosticDescriptor(SwapToInheritDocId, "Replace with <inheritdoc/>", "Replace with <inheritdoc/>", 
+				Category, DiagnosticSeverity.Hidden, isEnabledByDefault: true, description: Description);
+
+		private static DiagnosticDescriptor SwapToPullThroughDocRule
+			= new DiagnosticDescriptor(SwapToPullThroughDocId, "Replace with base <summary>", "Replace with base <summary>", 
+				Category, DiagnosticSeverity.Hidden, isEnabledByDefault: true, description: "Change to use the <summary> tag from the base class");
+
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics 
-			=> ImmutableArray.Create(PullThroughDocRule, SwapToInheritDocRule);
+			=> ImmutableArray.Create(PullThroughDocRule, SwapToInheritDocRule, SwapToPullThroughDocRule);
 
 		public override void Initialize(AnalysisContext context)
 		{
@@ -53,6 +61,10 @@ namespace PullThroughDoc
 				{
 					diagDesc = SwapToInheritDocRule;
 				}
+				else if (SuggestReplaceWithPullThroughDoc(currentDoc))
+				{
+					diagDesc = SwapToPullThroughDocRule;
+				}
 
 				if (diagDesc != null)
 				{
@@ -70,6 +82,11 @@ namespace PullThroughDoc
 		private static bool SuggestReplaceWithInheritDoc(string currentDoc)
 		{
 			return !string.IsNullOrEmpty(currentDoc) && !currentDoc.Contains("inheritdoc");
+		}
+
+		private static bool SuggestReplaceWithPullThroughDoc(string currentDoc)
+		{
+			return !string.IsNullOrEmpty(currentDoc) && currentDoc.Contains("inheritdoc");
 		}
 
 		private static bool TryGetBaseMemberDoc(SymbolAnalysisContext context, CancellationToken token, out string baseDoc)

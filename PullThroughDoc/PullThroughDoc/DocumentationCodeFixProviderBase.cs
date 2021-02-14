@@ -4,7 +4,6 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,11 +12,6 @@ namespace PullThroughDoc
 {
 	public abstract class DocumentationCodeFixProviderBase : CodeFixProvider
 	{
-
-		public override ImmutableArray<string> FixableDiagnosticIds
-		{
-			get { return ImmutableArray.Create(PullThroughDocAnalyzer.PullThroughDocDiagId); }
-		}
 
 		public sealed override FixAllProvider GetFixAllProvider()
 		{

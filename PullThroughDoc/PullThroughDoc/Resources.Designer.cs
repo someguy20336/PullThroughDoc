@@ -10,7 +10,6 @@
 
 namespace PullThroughDoc {
     using System;
-    using System.Reflection;
     
     
     /// <summary>
@@ -20,7 +19,7 @@ namespace PullThroughDoc {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -40,7 +39,7 @@ namespace PullThroughDoc {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("PullThroughDoc.Resources", typeof(Resources).GetTypeInfo().Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("PullThroughDoc.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -62,29 +61,29 @@ namespace PullThroughDoc {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Pull Through Documentation.
+        /// </summary>
+        internal static string PullThroghDocTitle {
+            get {
+                return ResourceManager.GetString("PullThroghDocTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Pull through the base class/interface documentation for a member..
         /// </summary>
-        internal static string AnalyzerDescription {
+        internal static string PullThroughDocDescription {
             get {
-                return ResourceManager.GetString("AnalyzerDescription", resourceCulture);
+                return ResourceManager.GetString("PullThroughDocDescription", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Pull through documentation for {0}..
         /// </summary>
-        internal static string AnalyzerMessageFormat {
+        internal static string PullThroughDocMessageFormat {
             get {
-                return ResourceManager.GetString("AnalyzerMessageFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Pull Through Documentation.
-        /// </summary>
-        internal static string AnalyzerTitle {
-            get {
-                return ResourceManager.GetString("AnalyzerTitle", resourceCulture);
+                return ResourceManager.GetString("PullThroughDocMessageFormat", resourceCulture);
             }
         }
     }
