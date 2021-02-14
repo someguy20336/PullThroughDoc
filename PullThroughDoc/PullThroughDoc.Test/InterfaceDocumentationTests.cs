@@ -19,13 +19,6 @@ namespace PullThroughDoc.Test
 		public void Interface_Documentation_PullsThrough()
 		{
 			var test = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-
     namespace ConsoleApplication1
     {
 		interface IInterface 
@@ -39,16 +32,9 @@ namespace PullThroughDoc.Test
         }
     }";
 
-			ExpectPullThroughDiagnosticAt(test, "DoThing", 18, 18);
+			ExpectPullThroughDiagnosticAt(test, "DoThing", 11, 18);
 
 			var fixtest = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-
     namespace ConsoleApplication1
     {
 		interface IInterface 
@@ -69,13 +55,6 @@ namespace PullThroughDoc.Test
 		public void Interface_MultiLineDocumentation_PullsThrough()
 		{
 			var test = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-
     namespace ConsoleApplication1
     {
 		interface IInterface 
@@ -91,16 +70,9 @@ namespace PullThroughDoc.Test
         }
     }";
 
-			ExpectPullThroughDiagnosticAt(test, "DoThing", 20, 18);
+			ExpectPullThroughDiagnosticAt(test, "DoThing", 13, 18);
 
 			var fixtest = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-
     namespace ConsoleApplication1
     {
 		interface IInterface 
@@ -125,13 +97,6 @@ namespace PullThroughDoc.Test
 		public void Interface_WithoutDocumentation_NoAnalyzer()
 		{
 			var test = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-
     namespace ConsoleApplication1
     {
 		interface IInterface 

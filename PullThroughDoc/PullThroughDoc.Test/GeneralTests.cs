@@ -24,13 +24,6 @@ namespace PullThroughDoc.Test
 		public void BaseObjectMethodOverride_NoAnalyzer()
 		{
 			var test = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-
     namespace ConsoleApplication1
     {
         class TypeName 
@@ -46,13 +39,6 @@ namespace PullThroughDoc.Test
 		public void Regions_Documentation_ExcludingRegion()
 		{
 			var test = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-
     namespace ConsoleApplication1
     {
 		class BaseClass 
@@ -67,16 +53,9 @@ namespace PullThroughDoc.Test
 			public override string DoThing() {}
         }
     }";
-			ExpectPullThroughDiagnosticAt(test, "DoThing", 20, 27);
+			ExpectPullThroughDiagnosticAt(test, "DoThing", 13, 27);
 
 			var fixtest = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-
     namespace ConsoleApplication1
     {
 		class BaseClass 

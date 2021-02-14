@@ -1,5 +1,4 @@
-﻿using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace PullThroughDoc.Test
 {
@@ -16,13 +15,6 @@ namespace PullThroughDoc.Test
 		public void BaseClass_WithExtraSpace_AddsInhertiDoc()
 		{
 			var test = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-
     namespace ConsoleApplication1
     {
 		class BaseClass 
@@ -36,16 +28,9 @@ namespace PullThroughDoc.Test
 			public override string DoThing() {}
         }
     }";
-			ExpectPullThroughDiagnosticAt(test, "DoThing", 19, 27);
+			ExpectPullThroughDiagnosticAt(test, "DoThing", 12, 27);
 
 			var fixtest = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-
     namespace ConsoleApplication1
     {
 		class BaseClass 
@@ -67,13 +52,6 @@ namespace PullThroughDoc.Test
 		public void BaseClass_NowLineBreakAfterBrace_AddsInhertiDoc()
 		{
 			var test = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-
     namespace ConsoleApplication1
     {
 		class BaseClass 
@@ -86,16 +64,9 @@ namespace PullThroughDoc.Test
 			public override string DoThing() {}
         }
     }";
-			ExpectPullThroughDiagnosticAt(test, "DoThing", 18, 27);
+			ExpectPullThroughDiagnosticAt(test, "DoThing", 11, 27);
 
 			var fixtest = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-
     namespace ConsoleApplication1
     {
 		class BaseClass 
@@ -116,13 +87,6 @@ namespace PullThroughDoc.Test
 		public void SwapToInherit_AddsInhertiDoc()
 		{
 			var test = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-
     namespace ConsoleApplication1
     {
 		class BaseClass 
@@ -138,13 +102,6 @@ namespace PullThroughDoc.Test
     }";
 
 			var fixtest = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-
     namespace ConsoleApplication1
     {
 		class BaseClass 
@@ -165,13 +122,6 @@ namespace PullThroughDoc.Test
         public void SwapToInherit_MultipleLineBreaks_AddsInhertiDoc()
         {
             var test = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-
     namespace ConsoleApplication1
     {
 		class BaseClass 
@@ -189,13 +139,6 @@ namespace PullThroughDoc.Test
     }";
 
             var fixtest = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-
     namespace ConsoleApplication1
     {
 		class BaseClass 
@@ -218,13 +161,6 @@ namespace PullThroughDoc.Test
         public void SwapToInherit_MultipleLineSummary_AddsInhertiDoc()
         {
             var test = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-
     namespace ConsoleApplication1
     {
 		class BaseClass 
@@ -242,13 +178,6 @@ namespace PullThroughDoc.Test
     }";
 
             var fixtest = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-
     namespace ConsoleApplication1
     {
 		class BaseClass 
