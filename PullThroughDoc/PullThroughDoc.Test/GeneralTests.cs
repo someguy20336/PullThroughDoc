@@ -1,13 +1,15 @@
-using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using TestHelper;
 
 namespace PullThroughDoc.Test
 {
 	[TestClass]
 	public class GeneralTests : PullThroughDocCodeFixVerifier
 	{
+		[TestInitialize]
+		public void Init()
+		{
+			CodeFixProvider = new PullThroughDocCodeFixProvider();
+		}
 
 		//No diagnostics expected to show up
 		[TestMethod]

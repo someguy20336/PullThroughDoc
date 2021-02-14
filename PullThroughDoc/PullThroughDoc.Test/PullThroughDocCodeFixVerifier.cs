@@ -8,6 +8,7 @@ namespace PullThroughDoc.Test
 {
 	public class PullThroughDocCodeFixVerifier : CodeFixVerifier
 	{
+		protected CodeFixProvider CodeFixProvider { get; set; }
 
 		protected void ExpectPullThroughDiagnosticAt(string text, string member, int line, int col)
 		{
@@ -27,7 +28,7 @@ namespace PullThroughDoc.Test
 
 		protected override CodeFixProvider GetCSharpCodeFixProvider()
 		{
-			return new PullThroughDocCodeFixProvider();
+			return CodeFixProvider;
 		}
 
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()

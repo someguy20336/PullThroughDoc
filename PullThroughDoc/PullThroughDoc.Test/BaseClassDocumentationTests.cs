@@ -1,7 +1,4 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using TestHelper;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace PullThroughDoc.Test
 {
@@ -11,6 +8,12 @@ namespace PullThroughDoc.Test
 	[TestClass]
 	public class BaseClassDocumentationTests : PullThroughDocCodeFixVerifier
 	{
+
+        [TestInitialize]
+        public void Init()
+		{
+            CodeFixProvider = new PullThroughDocCodeFixProvider();
+		}
 
 
 		[TestMethod]
@@ -162,5 +165,163 @@ namespace PullThroughDoc.Test
     }";
 			VerifyCSharpFix(test, fixtest);
 		}
-	}
+
+        [TestMethod]
+        public void ChangeToSummary_Works()
+        {
+            var test = @"
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using System.Diagnostics;
+
+    namespace ConsoleApplication1
+    {
+		class BaseClass 
+		{
+			/// <summary>Gets A Thing </summary>
+			public virtual string GetsThing { get => null; }
+		}
+        class TypeName : BaseClass
+        {
+            /// <inheritdocs />
+			public override string GetsThing { get => null; }
+        }
+    }";
+
+            var fixtest = @"
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using System.Diagnostics;
+
+    namespace ConsoleApplication1
+    {
+		class BaseClass 
+		{
+			/// <summary>Gets A Thing </summary>
+			public virtual string GetsThing { get => null; }
+		}
+        class TypeName : BaseClass
+        {
+			/// <summary>Gets A Thing </summary>
+			public override string GetsThing { get => null; }
+        }
+    }";
+            VerifyCSharpFix(test, fixtest);
+        }
+
+
+        [TestMethod]
+        public void ChangeToSummary_MultipleLineBreaks_Works()
+        {
+            var test = @"
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using System.Diagnostics;
+
+    namespace ConsoleApplication1
+    {
+		class BaseClass 
+		{
+			/// <summary>Gets A Thing </summary>
+			public virtual string GetsThing { get => null; }
+		}
+        class TypeName : BaseClass
+        {
+
+
+            /// <inheritdocs />
+			public override string GetsThing { get => null; }
+        }
+    }";
+
+            var fixtest = @"
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using System.Diagnostics;
+
+    namespace ConsoleApplication1
+    {
+		class BaseClass 
+		{
+			/// <summary>Gets A Thing </summary>
+			public virtual string GetsThing { get => null; }
+		}
+        class TypeName : BaseClass
+        {
+
+
+			/// <summary>Gets A Thing </summary>
+			public override string GetsThing { get => null; }
+        }
+    }";
+            VerifyCSharpFix(test, fixtest);
+        }
+
+        [TestMethod]
+        public void ChangeToSummary_MultipleLineSummary_Works()
+        {
+            var test = @"
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using System.Diagnostics;
+
+    namespace ConsoleApplication1
+    {
+		class BaseClass 
+		{
+			/// <summary>
+            /// Gets A Thing
+            /// </summary>
+			public virtual string GetsThing { get => null; }
+		}
+        class TypeName : BaseClass
+        {
+            /// <inheritdocs />
+			public override string GetsThing { get => null; }
+        }
+    }";
+
+            var fixtest = @"
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using System.Diagnostics;
+
+    namespace ConsoleApplication1
+    {
+		class BaseClass 
+		{
+			/// <summary>
+            /// Gets A Thing
+            /// </summary>
+			public virtual string GetsThing { get => null; }
+		}
+        class TypeName : BaseClass
+        {
+			/// <summary>
+            /// Gets A Thing
+            /// </summary>
+			public override string GetsThing { get => null; }
+        }
+    }";
+            VerifyCSharpFix(test, fixtest);
+        }
+    }
 }
