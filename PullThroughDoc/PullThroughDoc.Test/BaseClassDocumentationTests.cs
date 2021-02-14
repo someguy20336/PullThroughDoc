@@ -12,6 +12,7 @@ namespace PullThroughDoc.Test
 	public class BaseClassDocumentationTests : PullThroughDocCodeFixVerifier
 	{
 
+
 		[TestMethod]
 		public void BaseClass_Documentation_PullsThrough()
 		{
@@ -35,18 +36,8 @@ namespace PullThroughDoc.Test
 			public override string DoThing() {}
         }
     }";
-			var expected = new DiagnosticResult
-			{
-				Id = "PullThroughDoc",
-				Message = String.Format("Pull through documentation for {0}.", "DoThing"),
-				Severity = DiagnosticSeverity.Info,
-				Locations =
-					new[] {
-							new DiagnosticResultLocation("Test0.cs", 18, 27)
-						}
-			};
 
-			VerifyCSharpDiagnostic(test, expected);
+			ExpectPullThroughDiagnosticAt(test, "DoThing", 18, 27);
 
 			var fixtest = @"
     using System;
@@ -96,18 +87,8 @@ namespace PullThroughDoc.Test
 			public override string GetsThing { get; set; }
         }
     }";
-			var expected = new DiagnosticResult
-			{
-				Id = "PullThroughDoc",
-				Message = String.Format("Pull through documentation for {0}.", "GetsThing"),
-				Severity = DiagnosticSeverity.Info,
-				Locations =
-					new[] {
-							new DiagnosticResultLocation("Test0.cs", 18, 27)
-						}
-			};
 
-			VerifyCSharpDiagnostic(test, expected);
+			ExpectPullThroughDiagnosticAt(test, "GetsThing", 18, 27);
 
 			var fixtest = @"
     using System;
@@ -156,20 +137,9 @@ namespace PullThroughDoc.Test
 			public override string GetsThing { get => null; }
         }
     }";
-			var expected = new DiagnosticResult
-			{
-				Id = "PullThroughDoc",
-				Message = String.Format("Pull through documentation for {0}.", "GetsThing"),
-				Severity = DiagnosticSeverity.Info,
-				Locations =
-					new[] {
-							new DiagnosticResultLocation("Test0.cs", 18, 27)
-						}
-			};
+            ExpectPullThroughDiagnosticAt(test, "GetsThing", 18, 27);
 
-			VerifyCSharpDiagnostic(test, expected);
-
-			var fixtest = @"
+            var fixtest = @"
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -192,7 +162,5 @@ namespace PullThroughDoc.Test
     }";
 			VerifyCSharpFix(test, fixtest);
 		}
-
-
 	}
 }

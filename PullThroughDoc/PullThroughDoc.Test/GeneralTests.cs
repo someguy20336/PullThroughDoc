@@ -65,18 +65,7 @@ namespace PullThroughDoc.Test
 			public override string DoThing() {}
         }
     }";
-			var expected = new DiagnosticResult
-			{
-				Id = "PullThroughDoc",
-				Message = String.Format("Pull through documentation for {0}.", "DoThing"),
-				Severity = DiagnosticSeverity.Info,
-				Locations =
-					new[] {
-							new DiagnosticResultLocation("Test0.cs", 20, 27)
-						}
-			};
-
-			VerifyCSharpDiagnostic(test, expected);
+			ExpectPullThroughDiagnosticAt(test, "DoThing", 20, 27);
 
 			var fixtest = @"
     using System;

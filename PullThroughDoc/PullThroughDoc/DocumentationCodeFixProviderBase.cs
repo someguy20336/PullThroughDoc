@@ -14,9 +14,9 @@ namespace PullThroughDoc
 	{
 		protected abstract string Title { get; }
 
-		public sealed override ImmutableArray<string> FixableDiagnosticIds
+		public override ImmutableArray<string> FixableDiagnosticIds
 		{
-			get { return ImmutableArray.Create(PullThroughDocAnalyzer.DiagnosticId); }
+			get { return ImmutableArray.Create(PullThroughDocAnalyzer.PullThroughDocDiagId); }
 		}
 
 		public sealed override FixAllProvider GetFixAllProvider()

@@ -36,18 +36,8 @@ namespace PullThroughDoc.Test
 			public string DoThing() {}
         }
     }";
-			var expected = new DiagnosticResult
-			{
-				Id = "PullThroughDoc",
-				Message = String.Format("Pull through documentation for {0}.", "DoThing"),
-				Severity = DiagnosticSeverity.Info,
-				Locations =
-					new[] {
-							new DiagnosticResultLocation("Test0.cs", 18, 18)
-						}
-			};
 
-			VerifyCSharpDiagnostic(test, expected);
+			ExpectPullThroughDiagnosticAt(test, "DoThing", 18, 18);
 
 			var fixtest = @"
     using System;
@@ -98,18 +88,8 @@ namespace PullThroughDoc.Test
 			public string DoThing(string param1) {}
         }
     }";
-			var expected = new DiagnosticResult
-			{
-				Id = "PullThroughDoc",
-				Message = String.Format("Pull through documentation for {0}.", "DoThing"),
-				Severity = DiagnosticSeverity.Info,
-				Locations =
-					new[] {
-							new DiagnosticResultLocation("Test0.cs", 20, 18)
-						}
-			};
 
-			VerifyCSharpDiagnostic(test, expected);
+			ExpectPullThroughDiagnosticAt(test, "DoThing", 20, 18);
 
 			var fixtest = @"
     using System;
