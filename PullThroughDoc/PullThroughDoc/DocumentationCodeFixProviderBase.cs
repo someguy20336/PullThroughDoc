@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -12,7 +13,6 @@ namespace PullThroughDoc
 {
 	public abstract class DocumentationCodeFixProviderBase : CodeFixProvider
 	{
-		protected abstract string Title { get; }
 
 		public override ImmutableArray<string> FixableDiagnosticIds
 		{
@@ -35,11 +35,12 @@ namespace PullThroughDoc
 			var declaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<MemberDeclarationSyntax>().First();
 
 			// Register a code action that will invoke the fix.
+			string title = TitleForDiagnostic(diagnostic.Id);
 			context.RegisterCodeFix(
 				CodeAction.Create(
-					title: Title,
+					title: title,
 					createChangedDocument: c => Execute(context.Document, declaration, c),
-					equivalenceKey: Title),
+					equivalenceKey: title),
 				diagnostic);
 		}
 
@@ -72,6 +73,25 @@ namespace PullThroughDoc
 			return document.WithSyntaxRoot(other);
 		}
 
+		protected abstract string TitleForDiagnostic(string diagId);
+
 		protected abstract IEnumerable<SyntaxTrivia> GetTriviaFromMember(SyntaxNode baseMember, SyntaxNode targetMember);
+
+		protected IEnumerable<SyntaxTrivia> CollapseWhitespace(IEnumerable<SyntaxTrivia> trivia)
+		{
+
+			var triviaList = trivia.ToList();
+			// Cut out duplicate whitespace trivia that might result from removing regions
+			var newList = new List<SyntaxTrivia>() { triviaList[0] };
+			for (int i = 1; i < triviaList.Count; i++)
+			{
+				bool isDoubleWhitespace = triviaList[i - 1].Kind() == triviaList[i].Kind() && triviaList[i].IsKind(SyntaxKind.WhitespaceTrivia);
+				if (!isDoubleWhitespace)
+				{
+					newList.Add(triviaList[i]);
+				}
+			}
+			return newList;
+		}
 	}
 }

@@ -12,7 +12,17 @@ namespace PullThroughDoc
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(InsertInheritDocCodeFixProvider)), Shared]
 	public class InsertInheritDocCodeFixProvider : DocumentationCodeFixProviderBase
 	{
-		protected override string Title => "Insert <inhericdoc />";
+		protected override string TitleForDiagnostic(string diagId)
+		{
+			switch (diagId)
+			{
+				case PullThroughDocAnalyzer.SwapToInheritDocId:
+					return "Change to <inheritdoc />";
+				case PullThroughDocAnalyzer.PullThroughDocDiagId:
+				default:
+					return "Insert <inhericdoc />";
+			}
+		}
 
 		public sealed override ImmutableArray<string> FixableDiagnosticIds
 		{
@@ -21,8 +31,10 @@ namespace PullThroughDoc
 
 		protected override IEnumerable<SyntaxTrivia> GetTriviaFromMember(SyntaxNode baseMember, SyntaxNode targetMember)
 		{
-            var leadingTrivia = targetMember.GetLeadingTrivia();
+            IEnumerable<SyntaxTrivia> leadingTrivia = targetMember.GetLeadingTrivia();
 			var indentWhitespace = leadingTrivia.Last();
+
+			leadingTrivia = CollapseWhitespace(leadingTrivia.Where(t => !t.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia)));
 
             var triviaList = SyntaxFactory.ParseLeadingTrivia("/// <inheritdoc/>");
             return leadingTrivia
