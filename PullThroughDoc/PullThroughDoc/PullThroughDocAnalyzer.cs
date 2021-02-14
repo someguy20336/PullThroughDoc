@@ -21,11 +21,12 @@ namespace PullThroughDoc
 		
 
 		private static DiagnosticDescriptor PullThroughDocRule 
-			= new DiagnosticDescriptor(PullThroughDocDiagId, Title, MessageFormat, Category, DiagnosticSeverity.Info, isEnabledByDefault: true, description: Description);
+			= new DiagnosticDescriptor(PullThroughDocDiagId, Title, MessageFormat, 
+				Category, DiagnosticSeverity.Hidden, isEnabledByDefault: true, description: Description);
 
 		private static DiagnosticDescriptor SwapToInheritDocRule
 			= new DiagnosticDescriptor(SwapToInheritDocId, "Replace with <inheritdoc/>", "Replace with <inheritdoc/>", 
-				Category, DiagnosticSeverity.Hidden, isEnabledByDefault: true, description: Description);
+				Category, DiagnosticSeverity.Hidden, isEnabledByDefault: true, description: "Replace <summary> with <inheritdoc>");
 
 		private static DiagnosticDescriptor SwapToPullThroughDocRule
 			= new DiagnosticDescriptor(SwapToPullThroughDocId, "Replace with base <summary>", "Replace with base <summary>", 

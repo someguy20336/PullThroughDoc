@@ -42,10 +42,4 @@
     <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="System.Xml.ReaderWriter">
-      <HintPath>..\..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.netcore.app\2.0.0\ref\netcoreapp2.0\System.Xml.ReaderWriter.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>
