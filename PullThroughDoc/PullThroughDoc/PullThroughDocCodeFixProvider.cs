@@ -30,14 +30,18 @@ namespace PullThroughDoc
 
 		protected override IEnumerable<SyntaxTrivia> GetTriviaFromMember(SyntaxNode syntax, SyntaxNode targetMember)
 		{
-			// Remove regions
-			var nonRegion = syntax.GetLeadingTrivia().Where(tr => !tr.IsKind(SyntaxKind.RegionDirectiveTrivia)).ToList();
-			if (nonRegion.Count == 0)
-			{
-				return nonRegion;
-			}
+			IEnumerable<SyntaxTrivia> leadingTrivia = targetMember.GetLeadingTrivia();
+			var indentWhitespace = leadingTrivia.Last();
+			leadingTrivia = CollapseWhitespace(leadingTrivia.Where(t => !t.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia)));
 
-			return CollapseWhitespace(nonRegion);
+			// Grab only the doc comment trivia.  Seems to include a line break at the end
+			IEnumerable<SyntaxTrivia> nonRegion = syntax.GetLeadingTrivia()
+				.Where(tr => tr.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia))
+				.ToList();
+			
+			return leadingTrivia
+				.Concat(nonRegion)
+				.Concat(new[] { indentWhitespace });
 		}
 	}
 }

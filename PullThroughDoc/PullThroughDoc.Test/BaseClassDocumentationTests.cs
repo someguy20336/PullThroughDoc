@@ -101,7 +101,7 @@ namespace PullThroughDoc.Test
 			public virtual string GetsThing { get => null; }
 		}
         class TypeName : BaseClass
-        {   
+        {
 			public override string GetsThing { get => null; }
         }
     }";
@@ -116,7 +116,7 @@ namespace PullThroughDoc.Test
 			public virtual string GetsThing { get => null; }
 		}
         class TypeName : BaseClass
-        {   
+        {
 			/// <summary>Gets A Thing </summary>
 			public override string GetsThing { get => null; }
         }
@@ -128,34 +128,34 @@ namespace PullThroughDoc.Test
         public void ChangeToSummary_Works()
         {
             var test = @"
-    namespace ConsoleApplication1
+namespace ConsoleApplication1
+{
+	class BaseClass 
+	{
+		/// <summary>Gets A Thing </summary>
+		public virtual string GetsThing { get => null; }
+	}
+    class TypeName : BaseClass
     {
-		class BaseClass 
-		{
-			/// <summary>Gets A Thing </summary>
-			public virtual string GetsThing { get => null; }
-		}
-        class TypeName : BaseClass
-        {
-            /// <inheritdocs />
-			public override string GetsThing { get => null; }
-        }
-    }";
+		/// <inheritdocs />
+		public override string GetsThing { get => null; }
+    }
+}";
 
             var fixtest = @"
-    namespace ConsoleApplication1
+namespace ConsoleApplication1
+{
+	class BaseClass 
+	{
+		/// <summary>Gets A Thing </summary>
+		public virtual string GetsThing { get => null; }
+	}
+    class TypeName : BaseClass
     {
-		class BaseClass 
-		{
-			/// <summary>Gets A Thing </summary>
-			public virtual string GetsThing { get => null; }
-		}
-        class TypeName : BaseClass
-        {
-			/// <summary>Gets A Thing </summary>
-			public override string GetsThing { get => null; }
-        }
-    }";
+		/// <summary>Gets A Thing </summary>
+		public override string GetsThing { get => null; }
+    }
+}";
             VerifyCSharpFix(test, fixtest);
         }
 
@@ -164,38 +164,38 @@ namespace PullThroughDoc.Test
         public void ChangeToSummary_MultipleLineBreaks_Works()
         {
             var test = @"
-    namespace ConsoleApplication1
+namespace ConsoleApplication1
+{
+	class BaseClass 
+	{
+		/// <summary>Gets A Thing </summary>
+		public virtual string GetsThing { get => null; }
+	}
+    class TypeName : BaseClass
     {
-		class BaseClass 
-		{
-			/// <summary>Gets A Thing </summary>
-			public virtual string GetsThing { get => null; }
-		}
-        class TypeName : BaseClass
-        {
 
 
-            /// <inheritdocs />
-			public override string GetsThing { get => null; }
-        }
-    }";
+		/// <inheritdocs />
+		public override string GetsThing { get => null; }
+    }
+}";
 
             var fixtest = @"
-    namespace ConsoleApplication1
+namespace ConsoleApplication1
+{
+	class BaseClass 
+	{
+		/// <summary>Gets A Thing </summary>
+		public virtual string GetsThing { get => null; }
+	}
+    class TypeName : BaseClass
     {
-		class BaseClass 
-		{
-			/// <summary>Gets A Thing </summary>
-			public virtual string GetsThing { get => null; }
-		}
-        class TypeName : BaseClass
-        {
 
 
-			/// <summary>Gets A Thing </summary>
-			public override string GetsThing { get => null; }
-        }
-    }";
+		/// <summary>Gets A Thing </summary>
+		public override string GetsThing { get => null; }
+    }
+}";
             VerifyCSharpFix(test, fixtest);
         }
 
@@ -203,40 +203,40 @@ namespace PullThroughDoc.Test
         public void ChangeToSummary_MultipleLineSummary_Works()
         {
             var test = @"
-    namespace ConsoleApplication1
+namespace ConsoleApplication1
+{
+	class BaseClass 
+	{
+		/// <summary>
+        /// Gets A Thing
+        /// </summary>
+		public virtual string GetsThing { get => null; }
+	}
+    class TypeName : BaseClass
     {
-		class BaseClass 
-		{
-			/// <summary>
-            /// Gets A Thing
-            /// </summary>
-			public virtual string GetsThing { get => null; }
-		}
-        class TypeName : BaseClass
-        {
-            /// <inheritdocs />
-			public override string GetsThing { get => null; }
-        }
-    }";
+		/// <inheritdocs />
+		public override string GetsThing { get => null; }
+    }
+}";
 
             var fixtest = @"
-    namespace ConsoleApplication1
+namespace ConsoleApplication1
+{
+	class BaseClass 
+	{
+		/// <summary>
+        /// Gets A Thing
+        /// </summary>
+		public virtual string GetsThing { get => null; }
+	}
+    class TypeName : BaseClass
     {
-		class BaseClass 
-		{
-			/// <summary>
-            /// Gets A Thing
-            /// </summary>
-			public virtual string GetsThing { get => null; }
-		}
-        class TypeName : BaseClass
-        {
-			/// <summary>
-            /// Gets A Thing
-            /// </summary>
-			public override string GetsThing { get => null; }
-        }
-    }";
+		/// <summary>
+        /// Gets A Thing
+        /// </summary>
+		public override string GetsThing { get => null; }
+    }
+}";
             VerifyCSharpFix(test, fixtest);
         }
     }
