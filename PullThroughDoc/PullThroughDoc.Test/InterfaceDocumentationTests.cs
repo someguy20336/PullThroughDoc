@@ -1,7 +1,4 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using TestHelper;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace PullThroughDoc.Test
 {
@@ -11,19 +8,17 @@ namespace PullThroughDoc.Test
 	[TestClass]
 	public class InterfaceDocumentationTests : PullThroughDocCodeFixVerifier
 	{
+		[TestInitialize]
+		public void Init()
+		{
+			CodeFixProvider = new PullThroughDocCodeFixProvider();
+		}
 
 		//Diagnostic and CodeFix both triggered and checked for
 		[TestMethod]
 		public void Interface_Documentation_PullsThrough()
 		{
 			var test = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-
     namespace ConsoleApplication1
     {
 		interface IInterface 
@@ -36,27 +31,10 @@ namespace PullThroughDoc.Test
 			public string DoThing() {}
         }
     }";
-			var expected = new DiagnosticResult
-			{
-				Id = "PullThroughDoc",
-				Message = String.Format("Pull through documentation for {0}.", "DoThing"),
-				Severity = DiagnosticSeverity.Info,
-				Locations =
-					new[] {
-							new DiagnosticResultLocation("Test0.cs", 18, 18)
-						}
-			};
 
-			VerifyCSharpDiagnostic(test, expected);
+			ExpectPullThroughDiagnosticAt(test, "DoThing", 11, 18);
 
 			var fixtest = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-
     namespace ConsoleApplication1
     {
 		interface IInterface 
@@ -77,13 +55,6 @@ namespace PullThroughDoc.Test
 		public void Interface_MultiLineDocumentation_PullsThrough()
 		{
 			var test = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-
     namespace ConsoleApplication1
     {
 		interface IInterface 
@@ -98,27 +69,10 @@ namespace PullThroughDoc.Test
 			public string DoThing(string param1) {}
         }
     }";
-			var expected = new DiagnosticResult
-			{
-				Id = "PullThroughDoc",
-				Message = String.Format("Pull through documentation for {0}.", "DoThing"),
-				Severity = DiagnosticSeverity.Info,
-				Locations =
-					new[] {
-							new DiagnosticResultLocation("Test0.cs", 20, 18)
-						}
-			};
 
-			VerifyCSharpDiagnostic(test, expected);
+			ExpectPullThroughDiagnosticAt(test, "DoThing", 13, 18);
 
 			var fixtest = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-
     namespace ConsoleApplication1
     {
 		interface IInterface 
@@ -143,13 +97,6 @@ namespace PullThroughDoc.Test
 		public void Interface_WithoutDocumentation_NoAnalyzer()
 		{
 			var test = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-
     namespace ConsoleApplication1
     {
 		interface IInterface 

@@ -1,13 +1,15 @@
-using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using TestHelper;
 
 namespace PullThroughDoc.Test
 {
 	[TestClass]
 	public class GeneralTests : PullThroughDocCodeFixVerifier
 	{
+		[TestInitialize]
+		public void Init()
+		{
+			CodeFixProvider = new PullThroughDocCodeFixProvider();
+		}
 
 		//No diagnostics expected to show up
 		[TestMethod]
@@ -22,13 +24,6 @@ namespace PullThroughDoc.Test
 		public void BaseObjectMethodOverride_NoAnalyzer()
 		{
 			var test = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-
     namespace ConsoleApplication1
     {
         class TypeName 
@@ -44,13 +39,6 @@ namespace PullThroughDoc.Test
 		public void Regions_Documentation_ExcludingRegion()
 		{
 			var test = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-
     namespace ConsoleApplication1
     {
 		class BaseClass 
@@ -65,27 +53,9 @@ namespace PullThroughDoc.Test
 			public override string DoThing() {}
         }
     }";
-			var expected = new DiagnosticResult
-			{
-				Id = "PullThroughDoc",
-				Message = String.Format("Pull through documentation for {0}.", "DoThing"),
-				Severity = DiagnosticSeverity.Info,
-				Locations =
-					new[] {
-							new DiagnosticResultLocation("Test0.cs", 20, 27)
-						}
-			};
-
-			VerifyCSharpDiagnostic(test, expected);
+			ExpectPullThroughDiagnosticAt(test, "DoThing", 13, 27);
 
 			var fixtest = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-
     namespace ConsoleApplication1
     {
 		class BaseClass 
