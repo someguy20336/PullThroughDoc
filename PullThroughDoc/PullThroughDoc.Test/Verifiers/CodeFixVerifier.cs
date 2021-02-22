@@ -26,15 +26,6 @@ namespace TestHelper
 		}
 
 		/// <summary>
-		/// Returns the codefix being tested (VB) - to be implemented in non-abstract class
-		/// </summary>
-		/// <returns>The CodeFixProvider to be used for VisualBasic code</returns>
-		protected virtual CodeFixProvider GetBasicCodeFixProvider()
-		{
-			return null;
-		}
-
-		/// <summary>
 		/// Called to test a C# codefix when applied on the inputted string as a source
 		/// </summary>
 		/// <param name="oldSource">A class in the form of a string before the CodeFix was applied to it</param>
@@ -46,16 +37,28 @@ namespace TestHelper
 			VerifyFix(LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), GetCSharpCodeFixProvider(), oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics);
 		}
 
-		/// <summary>
-		/// Called to test a VB codefix when applied on the inputted string as a source
-		/// </summary>
-		/// <param name="oldSource">A class in the form of a string before the CodeFix was applied to it</param>
-		/// <param name="newSource">A class in the form of a string after the CodeFix was applied to it</param>
-		/// <param name="codeFixIndex">Index determining which codefix to apply if there are multiple</param>
-		/// <param name="allowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the CodeFix introduces other warnings after being applied</param>
-		protected void VerifyBasicFix(string oldSource, string newSource, int? codeFixIndex = null, bool allowNewCompilerDiagnostics = false)
+		protected void VerifySpecificCSharpFix(string oldSource, string newSource, int diagnosticIndex)
 		{
-			VerifyFix(LanguageNames.VisualBasic, GetBasicDiagnosticAnalyzer(), GetBasicCodeFixProvider(), oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics);
+			DiagnosticAnalyzer analyzer = GetCSharpDiagnosticAnalyzer();
+			CodeFixProvider codeFixProvider = GetCSharpCodeFixProvider();
+			var document = CreateDocument(oldSource, LanguageNames.CSharp);
+			var analyzerDiagnostics = GetSortedDiagnosticsFromDocuments(analyzer, new[] { document });
+			var compilerDiagnostics = GetCompilerDiagnostics(document);
+
+			var actions = new List<CodeAction>();
+			var context = new CodeFixContext(document, analyzerDiagnostics[diagnosticIndex], (a, d) => actions.Add(a), CancellationToken.None);
+			codeFixProvider.RegisterCodeFixesAsync(context).Wait();
+
+			if (!actions.Any())
+			{
+				Assert.Fail("Not Actions found");
+			}
+
+			document = ApplyFix(document, actions.ElementAt(0));
+
+			//after applying all of the code fixes, compare the resulting string to the inputted one
+			var actual = GetStringFromDocument(document);
+			Assert.AreEqual(newSource, actual);
 		}
 
 		/// <summary>
