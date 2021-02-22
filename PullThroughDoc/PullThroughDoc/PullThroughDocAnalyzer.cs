@@ -50,7 +50,8 @@ namespace PullThroughDoc
 			string currentDoc = context.Symbol.GetDocumentationCommentXml(cancellationToken: context.CancellationToken);
 
 			// Check if we can pull through the doc
-			if (TryGetBaseMemberDoc(context, context.CancellationToken, out var baseDoc) && !string.IsNullOrEmpty(baseDoc))
+			PullThroughInfo pullThroughInfo = new PullThroughInfo(context.Symbol, context.CancellationToken);
+			if (pullThroughInfo.SupportsPullingThroughDoc() && pullThroughInfo.HasBaseDocumentation())
 			{
 				DiagnosticDescriptor diagDesc = null;
 				if (SuggestPullThroughOrInherit(currentDoc))
@@ -90,34 +91,5 @@ namespace PullThroughDoc
 			return !string.IsNullOrEmpty(currentDoc) && currentDoc.Contains("inheritdoc");
 		}
 
-		private static bool TryGetBaseMemberDoc(SymbolAnalysisContext context, CancellationToken token, out string baseDoc)
-		{
-			baseDoc = null;
-			// The containing type isn't an interface
-			ISymbol symbol = context.Symbol;
-			INamedTypeSymbol containingType = symbol.ContainingType;
-			if (containingType.BaseType == null)
-			{
-				return false; // This is an interface
-			}
-
-			// Has a base symbol/interface method
-			ISymbol baseSymbol = symbol.GetBaseOrInterfaceMember();
-			if (baseSymbol == null)
-			{
-				return false;
-			}
-
-			// The base symbol should exist in this project
-			if (baseSymbol.DeclaringSyntaxReferences.IsEmpty)
-			{
-				return false;
-			}
-
-			// Base method has documentation
-			baseDoc = baseSymbol.GetDocumentationCommentXml(cancellationToken: token);
-			return true;
-
-		}
 	}
 }
