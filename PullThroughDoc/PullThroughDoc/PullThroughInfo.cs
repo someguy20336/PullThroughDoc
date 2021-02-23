@@ -1,9 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
-using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
-using System.Text;
 using System.Threading;
 
 namespace PullThroughDoc
@@ -12,7 +8,7 @@ namespace PullThroughDoc
 	{
 		private readonly ISymbol _targetMember;
 		private readonly CancellationToken _cancellation;
-		private List<ISymbol> _baseMembers;
+		private ISymbol _summaryDocSymbol;
 
 
 		public PullThroughInfo(ISymbol targetMember, CancellationToken cancellation)
@@ -29,8 +25,7 @@ namespace PullThroughDoc
 				return false; // This is an interface
 			}
 
-			var baseMembers = GetBaseMembers();
-			if (baseMembers.Count == 0)
+			if (GetSummaryDocSymbol() == null)
 			{
 				return false;
 			}
@@ -38,38 +33,28 @@ namespace PullThroughDoc
 			return true;
 		}
 
-		public bool HasBaseDocumentation()
+		public bool HasBaseSummaryDocumentation()
 		{
 			return !string.IsNullOrEmpty(GetSummaryDocumentation());
 		}
 
-		public ISymbol GetSummaryDocSymbol()
-		{
-			if (!SupportsPullingThroughDoc())
-			{
-				return null;      // TODO exception?
-			}
-
-			return GetBaseMembers().First();
-		}
 
 		public string GetSummaryDocumentation()
 		{
 			if (!SupportsPullingThroughDoc())
 			{
-				return "";		// TODO exception?
+				return "";
 			}
 
 			return GetSummaryDocSymbol().GetDocumentationCommentXml(cancellationToken: _cancellation);
 		}
 
-		private List<ISymbol> GetBaseMembers()
+		public ISymbol GetSummaryDocSymbol()
 		{
-			if (_baseMembers != null)
+			if (_summaryDocSymbol != null)
 			{
-				return _baseMembers;
+				return _summaryDocSymbol;
 			}
-			_baseMembers = new List<ISymbol>();
 
 			ISymbol symbol = GetBaseOrInterfaceMember(_targetMember);
 			while (symbol != null)
@@ -80,10 +65,18 @@ namespace PullThroughDoc
 					break;
 				}
 
-				_baseMembers.Add(symbol);
+				string baseDoc = symbol.GetDocumentationCommentXml(cancellationToken: _cancellation);
+
+				// The first base member with a <summary> is what we will use
+				if (baseDoc.Contains("<summary>"))
+				{
+					_summaryDocSymbol = symbol;
+					break;
+				}
+
 				symbol = GetBaseOrInterfaceMember(symbol);
 			}
-			return _baseMembers;
+			return _summaryDocSymbol;
 		}
 
 		/// <summary>

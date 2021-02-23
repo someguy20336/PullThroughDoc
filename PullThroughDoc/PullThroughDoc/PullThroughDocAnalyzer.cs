@@ -51,7 +51,7 @@ namespace PullThroughDoc
 
 			// Check if we can pull through the doc
 			PullThroughInfo pullThroughInfo = new PullThroughInfo(context.Symbol, context.CancellationToken);
-			if (pullThroughInfo.SupportsPullingThroughDoc() && pullThroughInfo.HasBaseDocumentation())
+			if (pullThroughInfo.SupportsPullingThroughDoc() && pullThroughInfo.HasBaseSummaryDocumentation())
 			{
 				DiagnosticDescriptor diagDesc = null;
 				if (SuggestPullThroughOrInherit(currentDoc))
