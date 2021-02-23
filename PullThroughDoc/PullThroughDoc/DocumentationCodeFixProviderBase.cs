@@ -44,20 +44,15 @@ namespace PullThroughDoc
 			var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
 			var memberSymbol = semanticModel.GetDeclaredSymbol(membDecl, cancellationToken);
 
-			ISymbol overrideSymb = memberSymbol.GetBaseOrInterfaceMember();
+			PullThroughInfo pullThroughInfo = new PullThroughInfo(memberSymbol, cancellationToken);
 
-			if (overrideSymb == null)
-			{
-				return document;
-			}
-
-			if (overrideSymb.DeclaringSyntaxReferences.IsEmpty)
+			if (!pullThroughInfo.SupportsPullingThroughDoc())
 			{
 				return document;
 			}
 
 			// Just use the first syntax reference because who cares at this point
-			var syntax = overrideSymb.DeclaringSyntaxReferences[0].GetSyntax(cancellationToken);
+			var syntax = pullThroughInfo.GetSummaryDocSymbol().DeclaringSyntaxReferences[0].GetSyntax(cancellationToken);
 			IEnumerable<SyntaxTrivia> trivia = GetTriviaFromMember(syntax, membDecl);
 			MemberDeclarationSyntax newMembDecl = membDecl.WithLeadingTrivia(trivia);
 

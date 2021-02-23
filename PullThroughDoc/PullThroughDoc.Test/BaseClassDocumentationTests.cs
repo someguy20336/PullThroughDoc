@@ -239,5 +239,56 @@ namespace ConsoleApplication1
 }";
             VerifyCSharpFix(test, fixtest);
         }
+
+		[TestMethod]
+		public void MultiGeneration_SwitchToSummary_PullsFirstSummaryInHierarchy()
+		{
+			var test = @"
+namespace ConsoleApplication1
+{
+	class BaseClass 
+	{
+		/// <summary>
+        /// Gets A Thing
+        /// </summary>
+		public virtual string GetsThing { get => null; }
+	}
+    class SecondGen : BaseClass
+    {
+		/// <inheritdocs />
+		public override string GetsThing { get => null; }
+    }
+    class ThirdGen : SecondGen
+    {
+		/// <inheritdocs />
+		public override string GetsThing { get => null; }
+    }
+}";
+
+			var fixtest = @"
+namespace ConsoleApplication1
+{
+	class BaseClass 
+	{
+		/// <summary>
+        /// Gets A Thing
+        /// </summary>
+		public virtual string GetsThing { get => null; }
+	}
+    class SecondGen : BaseClass
+    {
+		/// <inheritdocs />
+		public override string GetsThing { get => null; }
+    }
+    class ThirdGen : SecondGen
+    {
+		/// <summary>
+        /// Gets A Thing
+        /// </summary>
+		public override string GetsThing { get => null; }
+    }
+}";
+			VerifySpecificCSharpFix(test, fixtest, 1);
+		}
     }
 }
