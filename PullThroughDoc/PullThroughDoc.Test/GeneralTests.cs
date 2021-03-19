@@ -21,21 +21,6 @@ namespace PullThroughDoc.Test
 		}
 
 		[TestMethod]
-		public void BaseObjectMethodOverride_NoAnalyzer()
-		{
-			var test = @"
-    namespace ConsoleApplication1
-    {
-        class TypeName 
-        {   
-			public override string ToString() {}
-        }
-    }";
-
-			VerifyCSharpDiagnostic(test);
-		}
-
-		[TestMethod]
 		public void Regions_Documentation_ExcludingRegion()
 		{
 			var test = @"

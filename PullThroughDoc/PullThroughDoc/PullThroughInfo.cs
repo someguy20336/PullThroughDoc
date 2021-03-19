@@ -56,25 +56,28 @@ namespace PullThroughDoc
 				return _summaryDocSymbol;
 			}
 
-			ISymbol symbol = GetBaseOrInterfaceMember(_targetMember);
-			while (symbol != null)
+			_summaryDocSymbol = GetBaseOrInterfaceMember(_targetMember);
+			while (_summaryDocSymbol != null)
 			{
 				// Must exist in project
-				if (symbol.DeclaringSyntaxReferences.IsEmpty)
-				{
-					break;
-				}
+				// TODO: deleting this affects the thing that refernces this
+				// Need to break dependecy on "sytax node" there
 
-				string baseDoc = symbol.GetDocumentationCommentXml(cancellationToken: _cancellation);
+				//if (symbol.DeclaringSyntaxReferences.IsEmpty)
+				//{
+				//	break;
+				//}
+
+				// TODO: this actually works when run from VS!  but has <doc> around it
+				string baseDoc = _summaryDocSymbol.GetDocumentationCommentXml(cancellationToken: _cancellation);
 
 				// The first base member with a <summary> is what we will use
 				if (baseDoc.Contains("<summary>"))
 				{
-					_summaryDocSymbol = symbol;
 					break;
 				}
 
-				symbol = GetBaseOrInterfaceMember(symbol);
+				_summaryDocSymbol = GetBaseOrInterfaceMember(_summaryDocSymbol);
 			}
 			return _summaryDocSymbol;
 		}
