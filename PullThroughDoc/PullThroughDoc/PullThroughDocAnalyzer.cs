@@ -46,23 +46,22 @@ namespace PullThroughDoc
 
 		private static void AnalyzeSymbol(SymbolAnalysisContext context)
 		{
-			string currentDoc = context.Symbol.GetDocumentationCommentXml(cancellationToken: context.CancellationToken);
+
+			PullThroughInfo pullThroughInfo = new PullThroughInfo(context.Symbol, context.CancellationToken);
 
 			// Check if we can pull through the doc
-			PullThroughInfo pullThroughInfo = new PullThroughInfo(context.Symbol, context.CancellationToken);
 			if (pullThroughInfo.SupportsPullingThroughDoc() && pullThroughInfo.HasBaseSummaryDocumentation())
 			{
 				DiagnosticDescriptor diagDesc = null;
-				if (SuggestPullThroughOrInherit(currentDoc))
+				if (!pullThroughInfo.HasDocComments())
 				{
 					diagDesc = PullThroughDocRule;
-					
 				}
-				else if (SuggestReplaceWithInheritDoc(currentDoc))
+				else if (pullThroughInfo.SuggestReplaceWithInheritDoc())
 				{
 					diagDesc = SwapToInheritDocRule;
 				}
-				else if (SuggestReplaceWithPullThroughDoc(currentDoc))
+				else if (pullThroughInfo.SuggestReplaceWithPullThroughDoc())
 				{
 					diagDesc = SwapToPullThroughDocRule;
 				}
@@ -75,20 +74,6 @@ namespace PullThroughDoc
 			}
 		}
 
-		private static bool SuggestPullThroughOrInherit(string currentDoc)
-		{
-			return string.IsNullOrEmpty(currentDoc);
-		}
-
-		private static bool SuggestReplaceWithInheritDoc(string currentDoc)
-		{
-			return !string.IsNullOrEmpty(currentDoc) && !currentDoc.Contains("inheritdoc");
-		}
-
-		private static bool SuggestReplaceWithPullThroughDoc(string currentDoc)
-		{
-			return !string.IsNullOrEmpty(currentDoc) && currentDoc.Contains("inheritdoc");
-		}
 
 	}
 }

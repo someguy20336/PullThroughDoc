@@ -9,6 +9,8 @@ namespace PullThroughDoc
 {
 	public class PullThroughInfo
 	{
+		private SyntaxTriviaList? _lazyTargetMemberTrivia;
+		private SyntaxTriviaList? _lazyBaseMemberTrivia;
 		private readonly ISymbol _targetMember;
 		private readonly CancellationToken _cancellation;
 		private ISymbol _summaryDocSymbol;
@@ -27,7 +29,7 @@ namespace PullThroughDoc
 				return false; // This is an interface
 			}
 
-			if (GetSummaryDocSymbol() == null)
+			if (GetBaseSummaryDocSymbol() == null)
 			{
 				return false;
 			}
@@ -37,18 +39,28 @@ namespace PullThroughDoc
 
 		public bool HasBaseSummaryDocumentation()
 		{
-			var trivia = GetMemberTrivia();
+			var trivia = GetBaseMemberTrivia();
 			return trivia.Count > 0;
 		}
 
-		public SyntaxTriviaList GetMemberTrivia()
+		public SyntaxTriviaList GetBaseMemberTrivia()
+		{
+			if (!_lazyBaseMemberTrivia.HasValue)
+			{
+				_lazyBaseMemberTrivia = GetBaseMemberTriviaCore();
+			}
+
+			return _lazyBaseMemberTrivia.Value;
+		}
+
+		public SyntaxTriviaList GetBaseMemberTriviaCore()
 		{
 			if (!SupportsPullingThroughDoc())
 			{
 				return new SyntaxTriviaList();
 			}
 
-			var summaryDoc = GetSummaryDocSymbol();
+			var summaryDoc = GetBaseSummaryDocSymbol();
 			if (summaryDoc == null)
 			{
 				return new SyntaxTriviaList();
@@ -56,7 +68,9 @@ namespace PullThroughDoc
 
 			if (summaryDoc.DeclaringSyntaxReferences.IsEmpty)
 			{
-				return ParseExternalXml();
+				return ParseExternalXml(
+					GetBaseSummaryDocSymbol().GetDocumentationCommentXml(cancellationToken: _cancellation)
+					);
 			}
 
 			var syntax = summaryDoc.GetDocNodeForSymbol(_cancellation);
@@ -64,7 +78,35 @@ namespace PullThroughDoc
 
 		}
 
-		private ISymbol GetSummaryDocSymbol()
+		public bool HasDocComments()
+		{
+			return GetTargetMemberTrivia()
+				.Where(t => t.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia))
+				.Count() > 0;
+		}
+
+		public bool SuggestReplaceWithInheritDoc()
+		{
+			SyntaxTriviaList trivia = GetTargetMemberTrivia();
+			return HasDocComments() && !trivia.ToString().Contains("inheritdoc");
+		}
+
+		public bool SuggestReplaceWithPullThroughDoc()
+		{
+			SyntaxTriviaList trivia = GetTargetMemberTrivia();
+			return HasDocComments() && trivia.ToString().Contains("inheritdoc");
+		}
+
+		private SyntaxTriviaList GetTargetMemberTrivia()
+		{
+			if (!_lazyTargetMemberTrivia.HasValue)
+			{
+				_lazyTargetMemberTrivia = _targetMember.GetDocNodeForSymbol(_cancellation).GetLeadingTrivia();
+			}
+			return _lazyTargetMemberTrivia.Value;
+		}
+
+		private ISymbol GetBaseSummaryDocSymbol()
 		{
 			if (_summaryDocSymbol != null)
 			{
@@ -131,9 +173,12 @@ namespace PullThroughDoc
 			return null;
 		}
 
-		private SyntaxTriviaList ParseExternalXml()
+		private SyntaxTriviaList ParseExternalXml(string xml)
 		{
-			string xml = GetSummaryDocSymbol().GetDocumentationCommentXml(cancellationToken: _cancellation);
+			if (string.IsNullOrEmpty(xml))
+			{
+				return new SyntaxTriviaList();
+			}
 			XmlDocument doc = new XmlDocument();
 			doc.LoadXml(xml);
 

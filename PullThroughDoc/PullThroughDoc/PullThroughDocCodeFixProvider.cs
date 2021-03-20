@@ -35,7 +35,7 @@ namespace PullThroughDoc
 			leadingTrivia = CollapseWhitespace(leadingTrivia.Where(t => !t.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia)));
 
 			// Grab only the doc comment trivia.  Seems to include a line break at the end
-			IEnumerable<SyntaxTrivia> nonRegion = pullThroughInfo.GetMemberTrivia()
+			IEnumerable<SyntaxTrivia> nonRegion = pullThroughInfo.GetBaseMemberTrivia()
 				.Where(tr => tr.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia))
 				.ToList();
 			

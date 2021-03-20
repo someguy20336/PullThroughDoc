@@ -159,11 +159,13 @@ namespace TestHelper
 
 		private string CreateSubstring(string val, int pos)
 		{
-			return val.Substring(pos - 10, 10)
+			return "..."
+				+ val.Substring(pos - 10, 10)
 				+ "*>"
 				+ val[pos]
 				+ "<*"
-				+ val.Substring(pos + 1, 10);
+				+ val.Substring(pos + 1, 10)
+				+ "...";
 		}
 	}
 }
