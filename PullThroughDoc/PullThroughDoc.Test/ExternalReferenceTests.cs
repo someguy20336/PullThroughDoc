@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PullThroughDoc.Test.Helpers;
 
 namespace PullThroughDoc.Test
@@ -6,6 +7,8 @@ namespace PullThroughDoc.Test
 	[TestClass]
 	public class ExternalReferenceTests : PullThroughDocCodeFixVerifier
 	{
+		protected override CodeFixProvider CodeFixProvider => new PullThroughDocCodeFixProvider();
+
 		[TestMethod]
 		public void OverrideExternalMethod_PullsThrough()
 		{
@@ -29,7 +32,7 @@ namespace ConsoleApplication1
 {{
 	class ArrayListOverride : ArrayList
 	{{
-		{FakeVisualStudioDocumentationProvider.FakeSummaryDoc()}
+		/// {FakeVisualStudioDocumentationProvider.FakeSummaryDoc()}
 		public override int BinarySearch(object value) => 1;
 	}}
 }}";

@@ -29,7 +29,8 @@ namespace PullThroughDoc
 			get { return ImmutableArray.Create(PullThroughDocAnalyzer.PullThroughDocDiagId, PullThroughDocAnalyzer.SwapToInheritDocId); }
 		}
 
-		protected override IEnumerable<SyntaxTrivia> GetTriviaFromMember(SyntaxNode baseMember, SyntaxNode targetMember)
+		
+		protected override IEnumerable<SyntaxTrivia> GetTriviaFromMember(PullThroughInfo pullThroughInfo, SyntaxNode targetMember)
 		{
             IEnumerable<SyntaxTrivia> leadingTrivia = targetMember.GetLeadingTrivia();
 			var indentWhitespace = leadingTrivia.Last();

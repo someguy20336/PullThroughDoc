@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace PullThroughDoc.Test
 {
@@ -8,11 +9,8 @@ namespace PullThroughDoc.Test
 	[TestClass]
 	public class InterfaceDocumentationTests : PullThroughDocCodeFixVerifier
 	{
-		[TestInitialize]
-		public void Init()
-		{
-			CodeFixProvider = new PullThroughDocCodeFixProvider();
-		}
+
+		protected override CodeFixProvider CodeFixProvider => new PullThroughDocCodeFixProvider();
 
 		//Diagnostic and CodeFix both triggered and checked for
 		[TestMethod]

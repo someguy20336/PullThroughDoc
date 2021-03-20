@@ -28,14 +28,14 @@ namespace PullThroughDoc
 			}
 		}
 
-		protected override IEnumerable<SyntaxTrivia> GetTriviaFromMember(SyntaxNode syntax, SyntaxNode targetMember)
+		protected override IEnumerable<SyntaxTrivia> GetTriviaFromMember(PullThroughInfo pullThroughInfo, SyntaxNode targetMember)
 		{
 			IEnumerable<SyntaxTrivia> leadingTrivia = targetMember.GetLeadingTrivia();
 			var indentWhitespace = leadingTrivia.Last();
 			leadingTrivia = CollapseWhitespace(leadingTrivia.Where(t => !t.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia)));
 
 			// Grab only the doc comment trivia.  Seems to include a line break at the end
-			IEnumerable<SyntaxTrivia> nonRegion = syntax.GetLeadingTrivia()
+			IEnumerable<SyntaxTrivia> nonRegion = pullThroughInfo.GetMemberTrivia()
 				.Where(tr => tr.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia))
 				.ToList();
 			

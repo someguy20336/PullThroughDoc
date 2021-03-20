@@ -52,8 +52,7 @@ namespace PullThroughDoc
 			}
 
 			// Just use the first syntax reference because who cares at this point
-			var syntax = pullThroughInfo.GetSummaryDocSymbol().DeclaringSyntaxReferences[0].GetSyntax(cancellationToken);
-			IEnumerable<SyntaxTrivia> trivia = GetTriviaFromMember(syntax, membDecl);
+			IEnumerable<SyntaxTrivia> trivia = GetTriviaFromMember(pullThroughInfo, membDecl);
 			MemberDeclarationSyntax newMembDecl = membDecl.WithLeadingTrivia(trivia);
 
 			// Produce a new document
@@ -64,7 +63,7 @@ namespace PullThroughDoc
 
 		protected abstract string TitleForDiagnostic(string diagId);
 
-		protected abstract IEnumerable<SyntaxTrivia> GetTriviaFromMember(SyntaxNode baseMember, SyntaxNode targetMember);
+		protected abstract IEnumerable<SyntaxTrivia> GetTriviaFromMember(PullThroughInfo pullThroughInfo, SyntaxNode targetMember);
 
 		protected IEnumerable<SyntaxTrivia> CollapseWhitespace(IEnumerable<SyntaxTrivia> trivia)
 		{

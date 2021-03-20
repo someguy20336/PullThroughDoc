@@ -1,3 +1,4 @@
+using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace PullThroughDoc.Test
@@ -5,11 +6,7 @@ namespace PullThroughDoc.Test
 	[TestClass]
 	public class GeneralTests : PullThroughDocCodeFixVerifier
 	{
-		[TestInitialize]
-		public void Init()
-		{
-			CodeFixProvider = new PullThroughDocCodeFixProvider();
-		}
+		protected override CodeFixProvider CodeFixProvider => new PullThroughDocCodeFixProvider();
 
 		//No diagnostics expected to show up
 		[TestMethod]
@@ -59,5 +56,54 @@ namespace PullThroughDoc.Test
 			VerifyCSharpFix(test, fixtest);
 		}
 
+		[TestMethod]
+		public void Parameters_DocumentationIncluded()
+		{
+			var test = @"
+    namespace ConsoleApplication1
+    {
+		class BaseClass 
+		{
+			/// <summary>
+			/// Returns a thing
+			/// </summary>
+			/// <param name=""pullThroughInfo""></param>
+			/// <param name=""targetMember""></param>
+			/// <returns></returns>
+			public virtual string DoThing(string variable) { }
+		}
+        class TypeName : BaseClass
+        {   
+			public override string DoThing(string variable) {}
+        }
+    }";
+
+
+			var fixtest = @"
+    namespace ConsoleApplication1
+    {
+		class BaseClass 
+		{
+			/// <summary>
+			/// Returns a thing
+			/// </summary>
+			/// <param name=""pullThroughInfo""></param>
+			/// <param name=""targetMember""></param>
+			/// <returns></returns>
+			public virtual string DoThing(string variable) { }
+		}
+        class TypeName : BaseClass
+        {   
+			/// <summary>
+			/// Returns a thing
+			/// </summary>
+			/// <param name=""pullThroughInfo""></param>
+			/// <param name=""targetMember""></param>
+			/// <returns></returns>
+			public override string DoThing(string variable) {}
+        }
+    }";
+			VerifyCSharpFix(test, fixtest);
+		}
 	}
 }

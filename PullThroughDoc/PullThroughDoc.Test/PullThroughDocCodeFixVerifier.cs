@@ -6,9 +6,9 @@ using TestHelper;
 
 namespace PullThroughDoc.Test
 {
-	public class PullThroughDocCodeFixVerifier : CodeFixVerifier
+	public abstract class PullThroughDocCodeFixVerifier : CodeFixVerifier
 	{
-		protected CodeFixProvider CodeFixProvider { get; set; }
+		protected abstract CodeFixProvider CodeFixProvider { get; }
 
 		protected void ExpectPullThroughDiagnosticAt(string text, string member, int line, int col)
 		{

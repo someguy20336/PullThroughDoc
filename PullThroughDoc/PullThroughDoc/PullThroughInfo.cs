@@ -1,15 +1,17 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
+using System.Xml;
 
 namespace PullThroughDoc
 {
-	internal class PullThroughInfo
+	public class PullThroughInfo
 	{
 		private readonly ISymbol _targetMember;
 		private readonly CancellationToken _cancellation;
 		private ISymbol _summaryDocSymbol;
-
 
 		public PullThroughInfo(ISymbol targetMember, CancellationToken cancellation)
 		{
@@ -35,21 +37,34 @@ namespace PullThroughDoc
 
 		public bool HasBaseSummaryDocumentation()
 		{
-			return !string.IsNullOrEmpty(GetSummaryDocumentation());
+			var trivia = GetMemberTrivia();
+			return !trivia.IsEmpty;
 		}
 
-
-		public string GetSummaryDocumentation()
+		public ImmutableArray<SyntaxTrivia> GetMemberTrivia()
 		{
 			if (!SupportsPullingThroughDoc())
 			{
-				return "";
+				return ImmutableArray.Create<SyntaxTrivia>();
 			}
 
-			return GetSummaryDocSymbol().GetDocumentationCommentXml(cancellationToken: _cancellation);
+			var summaryDoc = GetSummaryDocSymbol();
+			if (summaryDoc == null)
+			{
+				return ImmutableArray.Create<SyntaxTrivia>();
+			}
+
+			if (summaryDoc.DeclaringSyntaxReferences.IsEmpty)
+			{
+				return ParseExternalXml();
+			}
+
+			var syntax = summaryDoc.DeclaringSyntaxReferences[0].GetSyntax(_cancellation);
+			return syntax.GetLeadingTrivia().ToImmutableArray();
+
 		}
 
-		public ISymbol GetSummaryDocSymbol()
+		private ISymbol GetSummaryDocSymbol()
 		{
 			if (_summaryDocSymbol != null)
 			{
@@ -59,16 +74,6 @@ namespace PullThroughDoc
 			_summaryDocSymbol = GetBaseOrInterfaceMember(_targetMember);
 			while (_summaryDocSymbol != null)
 			{
-				// Must exist in project
-				// TODO: deleting this affects the thing that refernces this
-				// Need to break dependecy on "sytax node" there
-
-				//if (symbol.DeclaringSyntaxReferences.IsEmpty)
-				//{
-				//	break;
-				//}
-
-				// TODO: this actually works when run from VS!  but has <doc> around it
 				string baseDoc = _summaryDocSymbol.GetDocumentationCommentXml(cancellationToken: _cancellation);
 
 				// The first base member with a <summary> is what we will use
@@ -124,6 +129,18 @@ namespace PullThroughDoc
 			}
 
 			return null;
+		}
+
+		private ImmutableArray<SyntaxTrivia> ParseExternalXml()
+		{
+			string xml = GetSummaryDocSymbol().GetDocumentationCommentXml(cancellationToken: _cancellation);
+			XmlDocument doc = new XmlDocument();
+			doc.LoadXml(xml);
+
+			// TODO how to parse this xml into syntax trivia?
+
+			SyntaxTriviaList trivia = SyntaxFactory.ParseLeadingTrivia(xml);
+			return trivia.ToImmutableArray();
 		}
 	}
 }

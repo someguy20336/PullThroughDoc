@@ -1,16 +1,13 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace PullThroughDoc.Test
 {
 	[TestClass]
 	public class InheritDocTests : PullThroughDocCodeFixVerifier
 	{
-		[TestInitialize]
-		public void Init()
-		{
-			CodeFixProvider = new InsertInheritDocCodeFixProvider();
-		}
-
+		protected override CodeFixProvider CodeFixProvider => new InsertInheritDocCodeFixProvider();
+		
 		[TestMethod]
 		public void BaseClass_WithExtraSpace_AddsInhertiDoc()
 		{
