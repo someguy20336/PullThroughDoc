@@ -33,7 +33,7 @@ namespace PullThroughDoc
 		protected override IEnumerable<SyntaxTrivia> GetTriviaFromMember(PullThroughInfo pullThroughInfo, SyntaxNode targetMember)
 		{
             IEnumerable<SyntaxTrivia> leadingTrivia = targetMember.GetLeadingTrivia();
-			var indentWhitespace = leadingTrivia.Last();
+			SyntaxTrivia indentWhitespace = leadingTrivia.GetIndentation();
 
 			leadingTrivia = CollapseWhitespace(leadingTrivia.Where(t => !t.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia)));
 

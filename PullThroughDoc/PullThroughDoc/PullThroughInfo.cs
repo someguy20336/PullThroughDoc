@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using System.Collections.Immutable;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Xml;
 
@@ -38,20 +38,20 @@ namespace PullThroughDoc
 		public bool HasBaseSummaryDocumentation()
 		{
 			var trivia = GetMemberTrivia();
-			return !trivia.IsEmpty;
+			return trivia.Count > 0;
 		}
 
-		public ImmutableArray<SyntaxTrivia> GetMemberTrivia()
+		public SyntaxTriviaList GetMemberTrivia()
 		{
 			if (!SupportsPullingThroughDoc())
 			{
-				return ImmutableArray.Create<SyntaxTrivia>();
+				return new SyntaxTriviaList();
 			}
 
 			var summaryDoc = GetSummaryDocSymbol();
 			if (summaryDoc == null)
 			{
-				return ImmutableArray.Create<SyntaxTrivia>();
+				return new SyntaxTriviaList();
 			}
 
 			if (summaryDoc.DeclaringSyntaxReferences.IsEmpty)
@@ -59,8 +59,8 @@ namespace PullThroughDoc
 				return ParseExternalXml();
 			}
 
-			var syntax = summaryDoc.DeclaringSyntaxReferences[0].GetSyntax(_cancellation);
-			return syntax.GetLeadingTrivia().ToImmutableArray();
+			var syntax = summaryDoc.GetDocNodeForSymbol(_cancellation);
+			return syntax.GetLeadingTrivia();
 
 		}
 
@@ -131,16 +131,22 @@ namespace PullThroughDoc
 			return null;
 		}
 
-		private ImmutableArray<SyntaxTrivia> ParseExternalXml()
+		private SyntaxTriviaList ParseExternalXml()
 		{
 			string xml = GetSummaryDocSymbol().GetDocumentationCommentXml(cancellationToken: _cancellation);
 			XmlDocument doc = new XmlDocument();
 			doc.LoadXml(xml);
 
-			// TODO how to parse this xml into syntax trivia?
+			var docNode = _targetMember.GetDocNodeForSymbol(_cancellation);
+			string indent = docNode.GetIndentation().ToString();
 
-			SyntaxTriviaList trivia = SyntaxFactory.ParseLeadingTrivia(xml);
-			return trivia.ToImmutableArray();
+			StringBuilder csharpDocComments = new StringBuilder();
+			foreach (XmlNode node in doc.FirstChild.ChildNodes)
+			{
+				csharpDocComments.AppendLine($"{indent}/// {node.OuterXml}");
+			}
+
+			return SyntaxFactory.ParseLeadingTrivia(csharpDocComments.ToString());
 		}
 	}
 }

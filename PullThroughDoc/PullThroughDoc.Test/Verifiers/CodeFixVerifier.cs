@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -125,7 +126,44 @@ namespace TestHelper
 
 			//after applying all of the code fixes, compare the resulting string to the inputted one
 			var actual = GetStringFromDocument(document);
-			Assert.AreEqual(newSource, actual);
+			AssertEqualStrings(newSource, actual);
+		}
+
+		private void AssertEqualStrings(string expected, string actual)
+		{
+			if (expected != actual)
+			{
+				for (int i = 0; i < Math.Min(expected.Length, actual.Length); i++)
+				{
+					AssertStringPosition(expected, actual, i);					
+				}
+
+				// Otherwise, they both matched to a certain point (probably rare..)
+				Assert.AreEqual(expected, actual);
+			}
+		}
+
+		private void AssertStringPosition(string expected, string actual, int pos)
+		{
+			if (expected[pos] == actual[pos])
+			{
+				return;
+			}
+
+			string expSubstr = CreateSubstring(expected, pos);
+			string actualSubstr = CreateSubstring(actual, pos);
+
+			Assert.AreEqual(expSubstr, actualSubstr);
+
+		}
+
+		private string CreateSubstring(string val, int pos)
+		{
+			return val.Substring(pos - 10, 10)
+				+ "*>"
+				+ val[pos]
+				+ "<*"
+				+ val.Substring(pos + 1, 10);
 		}
 	}
 }

@@ -51,10 +51,8 @@ namespace PullThroughDoc.Test
 
 			_docXml = @"
 <doc>
-  <summary>Searches a range of elements in the sorted <see cref=""T:System.Collections.ArrayList""></see> for an element using the specified comparer and returns the zero-based index of the element.</summary>
-  <param name=""index"">The zero-based starting index of the range to search.</param>
-  <param name=""count"">The length of the range to search.</param>
-  <param name=""value"">The <see cref=""T:System.Object""></see> to locate. The value can be null.</param>
+  <summary>Searches things.</summary>
+  <param name=""value"">The thing to find</param>
   <returns>The result</returns>
 </doc>
 ";
@@ -64,7 +62,7 @@ using System.Collections;
 
 namespace ConsoleApplication1
 {
-	class ArrayListOverride : ArrayList 
+	class ArrayListOverride : ArrayList
 	{
 		public override int BinarySearch(object value) => 1;
 	}
@@ -72,17 +70,19 @@ namespace ConsoleApplication1
 
 			ExpectPullThroughDiagnosticAt(test, "BinarySearch", 8, 23);
 
-			var fixtest = @$"
+			var fixtest = @"
 using System.Collections;
 
 namespace ConsoleApplication1
-{{
+{
 	class ArrayListOverride : ArrayList
-	{{
-		/// Dunno yet
+	{
+		/// <summary>Searches things.</summary>
+		/// <param name=""value"">The thing to find</param>
+		/// <returns>The result</returns>
 		public override int BinarySearch(object value) => 1;
-	}}
-}}";
+	}
+}";
 			VerifyCSharpFix(test, fixtest);
 		}
 
