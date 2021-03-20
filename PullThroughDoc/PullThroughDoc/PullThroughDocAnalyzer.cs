@@ -47,7 +47,11 @@ namespace PullThroughDoc
 		private static void AnalyzeSymbol(SymbolAnalysisContext context)
 		{
 
-			PullThroughInfo pullThroughInfo = new PullThroughInfo(context.Symbol, context.CancellationToken);
+			PullThroughInfo pullThroughInfo = new PullThroughInfo(
+				context.Symbol, 
+				context.CancellationToken,
+				context.Compilation.References
+				);
 
 			// Check if we can pull through the doc
 			if (pullThroughInfo.SupportsPullingThroughDoc() && pullThroughInfo.HasBaseSummaryDocumentation())

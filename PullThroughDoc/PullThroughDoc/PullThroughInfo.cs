@@ -1,24 +1,29 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Xml;
 
 namespace PullThroughDoc
 {
 	public class PullThroughInfo
 	{
-		private SyntaxTriviaList? _lazyTargetMemberTrivia;
+		private SyntaxTriviaProvider _targetMemberTriviaProvider;
 		private SyntaxTriviaList? _lazyBaseMemberTrivia;
 		private readonly ISymbol _targetMember;
 		private readonly CancellationToken _cancellation;
+		private readonly IEnumerable<MetadataReference> _references;
 		private ISymbol _summaryDocSymbol;
 
-		public PullThroughInfo(ISymbol targetMember, CancellationToken cancellation)
+		public PullThroughInfo(
+			ISymbol targetMember, 
+			CancellationToken cancellation,
+			IEnumerable<MetadataReference> references = null)
 		{
 			_targetMember = targetMember;
 			_cancellation = cancellation;
+			_references = references ?? new List<MetadataReference>();
+			_targetMemberTriviaProvider = new SourceCodeSyntaxTriviaProvider(_targetMember, cancellation);
 		}
 
 		public bool SupportsPullingThroughDoc()
@@ -47,34 +52,45 @@ namespace PullThroughDoc
 		{
 			if (!_lazyBaseMemberTrivia.HasValue)
 			{
-				_lazyBaseMemberTrivia = GetBaseMemberTriviaCore();
+				if (!SupportsPullingThroughDoc())
+				{
+					return new SyntaxTriviaList();
+				}
+
+				var summaryDoc = GetBaseSummaryDocSymbol();
+				if (summaryDoc == null)
+				{
+					return new SyntaxTriviaList();
+				}
+				SyntaxTriviaProvider prov = GetTriviaProviderForSymbol(summaryDoc);
+				_lazyBaseMemberTrivia = prov.GetSyntaxTrivia();
 			}
 
 			return _lazyBaseMemberTrivia.Value;
 		}
 
-		public SyntaxTriviaList GetBaseMemberTriviaCore()
+		private SyntaxTriviaProvider GetTriviaProviderForSymbol(ISymbol symbol)
 		{
-			if (!SupportsPullingThroughDoc())
+			if (symbol.DeclaringSyntaxReferences.IsEmpty)
 			{
-				return new SyntaxTriviaList();
-			}
-
-			var summaryDoc = GetBaseSummaryDocSymbol();
-			if (summaryDoc == null)
-			{
-				return new SyntaxTriviaList();
-			}
-
-			if (summaryDoc.DeclaringSyntaxReferences.IsEmpty)
-			{
-				return ParseExternalXml(
-					GetBaseSummaryDocSymbol().GetDocumentationCommentXml(cancellationToken: _cancellation)
+				string xml = symbol.GetDocumentationCommentXml(cancellationToken: _cancellation);
+				if (!string.IsNullOrEmpty(xml))
+				{
+					return new SpecifiedXmlSyntaxTriviaProvider(
+					xml,
+					_targetMember,
+					_cancellation
+					);
+				}
+				return new XmlFileSyntaxTriviaProvider(
+					symbol,
+					_targetMember,
+					_references,
+					_cancellation
 					);
 			}
 
-			var syntax = summaryDoc.GetDocNodeForSymbol(_cancellation);
-			return syntax.GetLeadingTrivia();
+			return new SourceCodeSyntaxTriviaProvider(symbol, _cancellation);
 
 		}
 
@@ -99,11 +115,7 @@ namespace PullThroughDoc
 
 		private SyntaxTriviaList GetTargetMemberTrivia()
 		{
-			if (!_lazyTargetMemberTrivia.HasValue)
-			{
-				_lazyTargetMemberTrivia = _targetMember.GetDocNodeForSymbol(_cancellation).GetLeadingTrivia();
-			}
-			return _lazyTargetMemberTrivia.Value;
+			return _targetMemberTriviaProvider.GetSyntaxTrivia();
 		}
 
 		private ISymbol GetBaseSummaryDocSymbol()
@@ -116,7 +128,8 @@ namespace PullThroughDoc
 			_summaryDocSymbol = GetBaseOrInterfaceMember(_targetMember);
 			while (_summaryDocSymbol != null)
 			{
-				string baseDoc = _summaryDocSymbol.GetDocumentationCommentXml(cancellationToken: _cancellation);
+				var prov = GetTriviaProviderForSymbol(_summaryDocSymbol);
+				string baseDoc = prov.GetSyntaxTrivia().ToString();
 
 				// The first base member with a <summary> is what we will use
 				if (baseDoc.Contains("<summary>"))
@@ -173,25 +186,6 @@ namespace PullThroughDoc
 			return null;
 		}
 
-		private SyntaxTriviaList ParseExternalXml(string xml)
-		{
-			if (string.IsNullOrEmpty(xml))
-			{
-				return new SyntaxTriviaList();
-			}
-			XmlDocument doc = new XmlDocument();
-			doc.LoadXml(xml);
 
-			var docNode = _targetMember.GetDocNodeForSymbol(_cancellation);
-			string indent = docNode.GetIndentation().ToString();
-
-			StringBuilder csharpDocComments = new StringBuilder();
-			foreach (XmlNode node in doc.FirstChild.ChildNodes)
-			{
-				csharpDocComments.AppendLine($"{indent}/// {node.OuterXml}");
-			}
-
-			return SyntaxFactory.ParseLeadingTrivia(csharpDocComments.ToString());
-		}
 	}
 }
