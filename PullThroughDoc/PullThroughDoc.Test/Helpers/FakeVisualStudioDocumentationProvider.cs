@@ -6,21 +6,25 @@ namespace PullThroughDoc.Test.Helpers
 {
 	class FakeVisualStudioDocumentationProvider : DocumentationProvider
 	{
+		private readonly string _doc;
+
 		public override bool Equals(object obj)
 		{
 			return Equals(this, obj);
 		}
 
-		public override int GetHashCode() => FakeFullDoc().GetHashCode();
+		public override int GetHashCode() => _doc.GetHashCode();
 		
+		public FakeVisualStudioDocumentationProvider(string doc)
+		{
+			_doc = doc;
+		}
 
 		protected override string GetDocumentationForSymbol(string documentationMemberID, CultureInfo preferredCulture, CancellationToken cancellationToken = default)
 		{
-			return FakeFullDoc();
+			return _doc;
 		}
 
 
-		public static string FakeSummaryDoc() => "<summary>This Is dummy doc</summary>";
-		public static string FakeFullDoc() => $"<doc>{FakeSummaryDoc()}</doc>";
 	}
 }
