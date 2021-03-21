@@ -30,21 +30,20 @@ namespace PullThroughDoc.Test
 		}
 
 		[TestMethod]
-		public void NoBaseDocumentationExternal_NoAnalyzer()
+		public void CoreDotNetLibrary_ProbesExternalXml()
 		{
-			// Not setting _docXml will result in no analyzer
-
 			var test = @"
+namespace ConsoleApplication1
+{
+    class TypeName
+    {   
+		public override string ToString() {}
+    }
+}";
 
-	namespace ConsoleApplication1
-    {
-        class TypeName 
-        {   
-			public override string ToString() {}
-        }
-    }";
-
-			VerifyCSharpDiagnostic(test);
+			ExpectPullThroughDiagnosticAt(test, "ToString", 6, 26);
+			
+			// Can't really test the replace again here
 		}
 
 		[TestMethod]
