@@ -18,6 +18,7 @@ namespace PullThroughDoc.Test
 			{
 				var refs = base.References;
 				refs[0] = MetadataReference.CreateFromFile(typeof(object).Assembly.Location, documentation: new FakeVisualStudioDocumentationProvider(_docXml));
+				refs.Add(MetadataReference.CreateFromFile(typeof(OverridableClass).Assembly.Location));
 				return refs;
 			}
 		}
@@ -34,7 +35,8 @@ namespace PullThroughDoc.Test
 			// Not setting _docXml will result in no analyzer
 
 			var test = @"
-    namespace ConsoleApplication1
+
+	namespace ConsoleApplication1
     {
         class TypeName 
         {   
@@ -43,6 +45,41 @@ namespace PullThroughDoc.Test
     }";
 
 			VerifyCSharpDiagnostic(test);
+		}
+
+		[TestMethod]
+		public void ExternalXmlFile_IdentifiesDiagnostic()
+		{
+
+			var test = @"
+using PullThroughDoc.Test.Helpers;
+
+namespace ConsoleApplication1
+{
+	class OverrideTestClass : OverridableClass
+	{
+		public override int GetNumber() => 0;
+	}
+}";
+
+			ExpectPullThroughDiagnosticAt(test, "GetNumber", 8, 23);
+
+			// Note: I cannot actually fix this because of weirdness
+			// with how the analyzer is evaluated and "fixed" that I cannot figure out
+
+//			var fixtest = @"
+//using PullThroughDoc.Test.Helpers;
+
+//namespace ConsoleApplication1
+//{
+//	class OverrideTestClass : OverridableClass
+//	{
+//		/// <summary>Gets a specific number</summary>
+//		/// <returns></returns>
+//		public override int GetNumber() => 2;
+//	}
+//}";
+//			VerifyCSharpFix(test, fixtest);
 		}
 
 		[TestMethod]

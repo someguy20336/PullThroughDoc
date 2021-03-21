@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28010.2036
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31112.23
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PullThroughDoc", "PullThroughDoc\PullThroughDoc\PullThroughDoc.csproj", "{5EFB85EF-6407-4F22-8884-B914E494F648}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PullThroughDoc", "PullThroughDoc\PullThroughDoc\PullThroughDoc.csproj", "{5EFB85EF-6407-4F22-8884-B914E494F648}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PullThroughDoc.Test", "PullThroughDoc\PullThroughDoc.Test\PullThroughDoc.Test.csproj", "{D26CB3C7-4BD7-43C7-B576-CC4F83C265DC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PullThroughDoc.Test", "PullThroughDoc\PullThroughDoc.Test\PullThroughDoc.Test.csproj", "{D26CB3C7-4BD7-43C7-B576-CC4F83C265DC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PullThroughDoc.Vsix", "PullThroughDoc\PullThroughDoc.Vsix\PullThroughDoc.Vsix.csproj", "{8955632C-49A5-4847-AA0B-EB89738700CE}"
 EndProject

@@ -4,6 +4,10 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>.\PullThroughDoc.Test.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="2.9.3" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="2.10.0" />
