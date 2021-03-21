@@ -8,7 +8,7 @@ namespace PullThroughDoc
 {
 	public class PullThroughInfo
 	{
-		private SyntaxTriviaProvider _targetMemberTriviaProvider;
+		private readonly SyntaxTriviaProvider _targetMemberTriviaProvider;
 		private SyntaxTriviaList? _lazyBaseMemberTrivia;
 		private readonly ISymbol _targetMember;
 		private readonly CancellationToken _cancellation;

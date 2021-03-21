@@ -18,7 +18,7 @@ namespace PullThroughDoc
 
 		protected CancellationToken Cancellation { get; }
 
-		public SyntaxTriviaProvider(CancellationToken cancellation)
+		protected SyntaxTriviaProvider(CancellationToken cancellation)
 		{
 			Cancellation = cancellation;
 		}
@@ -129,7 +129,7 @@ namespace PullThroughDoc
 
 	internal class XmlFileSyntaxTriviaProvider : XmlSyntaxTriviaProvider
 	{
-		private static ConcurrentDictionary<string, CustomFileBasedXmlDocumentationProvider> s_cachedDocProv 
+		private static readonly ConcurrentDictionary<string, CustomFileBasedXmlDocumentationProvider> s_cachedDocProv 
 			= new ConcurrentDictionary<string, CustomFileBasedXmlDocumentationProvider>();
 		private readonly ISymbol _baseSymbol;
 		private readonly IEnumerable<MetadataReference> _metadataReferences;
@@ -223,8 +223,7 @@ namespace PullThroughDoc
 
 			public override bool Equals(object obj)
 			{
-				var other = obj as CustomFileBasedXmlDocumentationProvider;
-				return other != null && _filePath == other._filePath;
+				return obj is CustomFileBasedXmlDocumentationProvider other && _filePath == other._filePath;
 			}
 
 			public override int GetHashCode()
