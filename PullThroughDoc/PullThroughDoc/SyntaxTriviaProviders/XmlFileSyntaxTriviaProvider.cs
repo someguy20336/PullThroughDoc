@@ -61,14 +61,6 @@ namespace PullThroughDoc
 
 			string xml = docProvider.GetDocumentation(_baseSymbol.GetDocumentationCommentId());
 
-
-			// TODO: this dummy thing... works.  But when would I actually want it?  It would cause
-			// the action for every single prop/method
-			//else
-			//{
-			//	xml = "<doc><summary>dummy</summary></doc>";
-			//}
-
 			return ParseExternalXml(xml);
 		}
 
