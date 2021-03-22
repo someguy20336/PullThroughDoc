@@ -1,20 +1,25 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using System.Linq;
 using System.Threading;
 
 namespace PullThroughDoc
 {
-	internal class PullThroughInfo
+	public class PullThroughInfo
 	{
+		private readonly SyntaxTriviaProvider _targetMemberTriviaProvider;
+		private SyntaxTriviaList? _lazyBaseMemberTrivia;
 		private readonly ISymbol _targetMember;
 		private readonly CancellationToken _cancellation;
 		private ISymbol _summaryDocSymbol;
 
-
-		public PullThroughInfo(ISymbol targetMember, CancellationToken cancellation)
+		public PullThroughInfo(
+			ISymbol targetMember, 
+			CancellationToken cancellation)
 		{
 			_targetMember = targetMember;
 			_cancellation = cancellation;
+			_targetMemberTriviaProvider = new SourceCodeSyntaxTriviaProvider(_targetMember, cancellation);
 		}
 
 		public bool SupportsPullingThroughDoc()
@@ -25,7 +30,7 @@ namespace PullThroughDoc
 				return false; // This is an interface
 			}
 
-			if (GetSummaryDocSymbol() == null)
+			if (GetBaseSummaryDocSymbol() == null)
 			{
 				return false;
 			}
@@ -35,46 +40,95 @@ namespace PullThroughDoc
 
 		public bool HasBaseSummaryDocumentation()
 		{
-			return !string.IsNullOrEmpty(GetSummaryDocumentation());
+			var trivia = GetBaseMemberTrivia();
+			return trivia.Count > 0;
 		}
 
-
-		public string GetSummaryDocumentation()
+		public SyntaxTriviaList GetBaseMemberTrivia()
 		{
-			if (!SupportsPullingThroughDoc())
+			if (!_lazyBaseMemberTrivia.HasValue)
 			{
-				return "";
+				if (!SupportsPullingThroughDoc())
+				{
+					return new SyntaxTriviaList();
+				}
+
+				var summaryDoc = GetBaseSummaryDocSymbol();
+				if (summaryDoc == null)
+				{
+					return new SyntaxTriviaList();
+				}
+				SyntaxTriviaProvider prov = GetTriviaProviderForSymbol(summaryDoc);
+				_lazyBaseMemberTrivia = prov.GetSyntaxTrivia();
 			}
 
-			return GetSummaryDocSymbol().GetDocumentationCommentXml(cancellationToken: _cancellation);
+			return _lazyBaseMemberTrivia.Value;
 		}
 
-		public ISymbol GetSummaryDocSymbol()
+		private SyntaxTriviaProvider GetTriviaProviderForSymbol(ISymbol symbol)
+		{
+			if (symbol.DeclaringSyntaxReferences.IsEmpty)
+			{
+				string xml = symbol.GetDocumentationCommentXml(cancellationToken: _cancellation);
+				if (!string.IsNullOrEmpty(xml))
+				{
+					return new SpecifiedXmlSyntaxTriviaProvider(
+					xml,
+					_targetMember,
+					_cancellation
+					);
+				}
+				return new NullSyntaxTriviaProvider();
+			}
+
+			return new SourceCodeSyntaxTriviaProvider(symbol, _cancellation);
+
+		}
+
+		public bool HasDocComments()
+		{
+			return GetTargetMemberTrivia()
+				.Where(t => t.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia))
+				.Count() > 0;
+		}
+
+		public bool SuggestReplaceWithInheritDoc()
+		{
+			SyntaxTriviaList trivia = GetTargetMemberTrivia();
+			return HasDocComments() && !trivia.ToString().Contains("inheritdoc");
+		}
+
+		public bool SuggestReplaceWithPullThroughDoc()
+		{
+			SyntaxTriviaList trivia = GetTargetMemberTrivia();
+			return HasDocComments() && trivia.ToString().Contains("inheritdoc");
+		}
+
+		private SyntaxTriviaList GetTargetMemberTrivia()
+		{
+			return _targetMemberTriviaProvider.GetSyntaxTrivia();
+		}
+
+		private ISymbol GetBaseSummaryDocSymbol()
 		{
 			if (_summaryDocSymbol != null)
 			{
 				return _summaryDocSymbol;
 			}
 
-			ISymbol symbol = GetBaseOrInterfaceMember(_targetMember);
-			while (symbol != null)
+			_summaryDocSymbol = GetBaseOrInterfaceMember(_targetMember);
+			while (_summaryDocSymbol != null)
 			{
-				// Must exist in project
-				if (symbol.DeclaringSyntaxReferences.IsEmpty)
-				{
-					break;
-				}
-
-				string baseDoc = symbol.GetDocumentationCommentXml(cancellationToken: _cancellation);
+				var prov = GetTriviaProviderForSymbol(_summaryDocSymbol);
+				string baseDoc = prov.GetSyntaxTrivia().ToString();
 
 				// The first base member with a <summary> is what we will use
 				if (baseDoc.Contains("<summary>"))
 				{
-					_summaryDocSymbol = symbol;
 					break;
 				}
 
-				symbol = GetBaseOrInterfaceMember(symbol);
+				_summaryDocSymbol = GetBaseOrInterfaceMember(_summaryDocSymbol);
 			}
 			return _summaryDocSymbol;
 		}
@@ -122,5 +176,7 @@ namespace PullThroughDoc
 
 			return null;
 		}
+
+
 	}
 }

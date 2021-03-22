@@ -35,22 +35,22 @@ namespace TestHelper
 	/// </summary>
 	public struct DiagnosticResult
 	{
-		private DiagnosticResultLocation[] locations;
+		private DiagnosticResultLocation[] _locations;
 
 		public DiagnosticResultLocation[] Locations
 		{
 			get
 			{
-				if (this.locations == null)
+				if (this._locations == null)
 				{
-					this.locations = new DiagnosticResultLocation[] { };
+					this._locations = Array.Empty<DiagnosticResultLocation>();
 				}
-				return this.locations;
+				return this._locations;
 			}
 
 			set
 			{
-				this.locations = value;
+				this._locations = value;
 			}
 		}
 
