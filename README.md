@@ -45,8 +45,10 @@ class MyClass : IMyInterface
 The diagnostic is hidden and will show up if you open the quick actions lightbulb when:
 - Your cursor is on a member name
 - One of the following is true:
-  - The base member has documentation and the override member does not
+  - The base member (see below) has documentation and the override member does not
   - The override member has `<summary>` documentation (giving you the option to switch to `<inheritdoc>`)
   - The override member has `<inheritdoc>` (giving you the option to switch to `<summary>`)
 
-At the moment, only base classes and interfaces in your solution are supported.  Classes defined outside of your project will not pull through.
+The "base member" can be located in
+  - A class in the same solution, like `MyClass.BaseMember()` (this works the best as the documentation is available in the source code)
+  - An external library, like `Object.ToString()`.  This should mostly work, but does have some limitations and caveats - see [this issue](https://github.com/someguy20336/PullThroughDoc/issues/12) if you are having problems with the analyzer/code fix.  If you don't think your problem falls into any of the caveats outlined, submit a new issue
