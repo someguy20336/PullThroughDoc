@@ -1,6 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
@@ -12,17 +11,14 @@ namespace PullThroughDoc
 		private SyntaxTriviaList? _lazyBaseMemberTrivia;
 		private readonly ISymbol _targetMember;
 		private readonly CancellationToken _cancellation;
-		private readonly IEnumerable<MetadataReference> _references;
 		private ISymbol _summaryDocSymbol;
 
 		public PullThroughInfo(
 			ISymbol targetMember, 
-			CancellationToken cancellation,
-			IEnumerable<MetadataReference> references = null)
+			CancellationToken cancellation)
 		{
 			_targetMember = targetMember;
 			_cancellation = cancellation;
-			_references = references ?? new List<MetadataReference>();
 			_targetMemberTriviaProvider = new SourceCodeSyntaxTriviaProvider(_targetMember, cancellation);
 		}
 
@@ -82,12 +78,7 @@ namespace PullThroughDoc
 					_cancellation
 					);
 				}
-				return new XmlFileSyntaxTriviaProvider(
-					symbol,
-					_targetMember,
-					_references,
-					_cancellation
-					);
+				return new NullSyntaxTriviaProvider();
 			}
 
 			return new SourceCodeSyntaxTriviaProvider(symbol, _cancellation);

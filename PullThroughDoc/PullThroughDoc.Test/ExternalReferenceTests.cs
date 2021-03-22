@@ -30,58 +30,6 @@ namespace PullThroughDoc.Test
 		}
 
 		[TestMethod]
-		public void CoreDotNetLibrary_ProbesExternalXml()
-		{
-			var test = @"
-namespace ConsoleApplication1
-{
-    class TypeName
-    {   
-		public override string ToString() {}
-    }
-}";
-
-			ExpectPullThroughDiagnosticAt(test, "ToString", 6, 26);
-			
-			// Can't really test the replace again here
-		}
-
-		[TestMethod]
-		public void ExternalXmlFile_IdentifiesDiagnostic()
-		{
-
-			var test = @"
-using PullThroughDoc.Test.Helpers;
-
-namespace ConsoleApplication1
-{
-	class OverrideTestClass : OverridableClass
-	{
-		public override int GetNumber() => 0;
-	}
-}";
-
-			ExpectPullThroughDiagnosticAt(test, "GetNumber", 8, 23);
-
-			// Note: I cannot actually fix this because of weirdness
-			// with how the analyzer is evaluated and "fixed" that I cannot figure out
-
-//			var fixtest = @"
-//using PullThroughDoc.Test.Helpers;
-
-//namespace ConsoleApplication1
-//{
-//	class OverrideTestClass : OverridableClass
-//	{
-//		/// <summary>Gets a specific number</summary>
-//		/// <returns></returns>
-//		public override int GetNumber() => 2;
-//	}
-//}";
-//			VerifyCSharpFix(test, fixtest);
-		}
-
-		[TestMethod]
 		public void OverrideExternalMethod_PullsThrough()
 		{
 
@@ -116,6 +64,54 @@ namespace ConsoleApplication1
 		/// <summary>Searches things.</summary>
 		/// <param name=""value"">The thing to find</param>
 		/// <returns>The result</returns>
+		public override int BinarySearch(object value) => 1;
+	}
+}";
+			VerifyCSharpFix(test, fixtest);
+		}
+
+		// This example is taken from JsonConverter in Newtonsoft.Json
+		// Also, still not perfect... some weird stuff with the "returns" and line breaks is happening, but who cares
+		[TestMethod]
+		public void MultiLineDocumentation_PullsThroughMultiLine()
+		{
+			_docXml = @"
+<doc>
+            <summary>
+            Summary Part
+            </summary>
+            <param name=""objectType"">Type of the object.</param>
+            <returns>
+                <c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
+            </returns>
+        </doc>";
+
+
+
+			var test = @"
+using System.Collections;
+
+namespace ConsoleApplication1
+{
+	class ArrayListOverride : ArrayList
+	{
+		public override int BinarySearch(object value) => 1;
+	}
+}";
+
+			var fixtest = @"
+using System.Collections;
+
+namespace ConsoleApplication1
+{
+	class ArrayListOverride : ArrayList
+	{
+		/// <summary>
+		/// Summary Part
+		/// </summary>
+		/// <param name=""objectType"">Type of the object.</param>
+		/// <returns><c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
+		/// </returns>
 		public override int BinarySearch(object value) => 1;
 	}
 }";

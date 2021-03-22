@@ -10,7 +10,7 @@ namespace PullThroughDoc
 		public const string PullThroughDocDiagId = "PullThroughDoc01";
 		public const string SwapToInheritDocId = "PullThroughDoc02";
 		public const string SwapToPullThroughDocId = "PullThroughDoc03";
-		public const string Category = "Design";
+		public const string Category = "Documentation";
 
 		// You can change these strings in the Resources.resx file. If you do not want your analyzer to be localize-able, you can use regular strings for Title and MessageFormat.
 		// See https://github.com/dotnet/roslyn/blob/master/docs/analyzers/Localizing%20Analyzers.md for more on localization
@@ -49,8 +49,7 @@ namespace PullThroughDoc
 
 			PullThroughInfo pullThroughInfo = new PullThroughInfo(
 				context.Symbol, 
-				context.CancellationToken,
-				context.Compilation.References
+				context.CancellationToken
 				);
 
 			// Check if we can pull through the doc

@@ -46,7 +46,11 @@ namespace PullThroughDoc
 			StringBuilder csharpDocComments = new StringBuilder();
 			foreach (XmlNode node in doc.FirstChild.ChildNodes)
 			{
-				csharpDocComments.AppendLine($"{indent}/// {node.OuterXml}");
+				string[] lines =  node.OuterXml.Split(new[] { "\r\n" }, System.StringSplitOptions.RemoveEmptyEntries);
+				foreach (var line in lines)
+				{
+					csharpDocComments.AppendLine($"{indent}/// {line.Trim()}");
+				}
 			}
 
 			return SyntaxFactory.ParseLeadingTrivia(csharpDocComments.ToString());
