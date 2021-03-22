@@ -16,15 +16,29 @@ namespace PullThroughDoc
 			_targetMember = targetMember;
 		}
 
+		protected sealed override SyntaxTriviaList GetSyntaxTriviaCore()
+		{
+			string xml = GetWellFormedXml();
+			return ParseExternalXml(xml);
+		}
+		protected abstract string GetWellFormedXml();
 
-		protected SyntaxTriviaList ParseExternalXml(string xml)
+		private SyntaxTriviaList ParseExternalXml(string xml)
 		{
 			if (string.IsNullOrEmpty(xml))
 			{
 				return new SyntaxTriviaList();
 			}
-			XmlDocument doc = new XmlDocument();
-			doc.LoadXml(xml);
+			XmlDocument doc = new();
+
+			try
+			{
+				doc.LoadXml(xml);
+			}
+			catch (System.Exception)
+			{
+				return new SyntaxTriviaList();
+			}
 
 			var docNode = _targetMember.GetDocNodeForSymbol(Cancellation);
 			string indent = docNode.GetIndentation().ToString();

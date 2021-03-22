@@ -8,6 +8,7 @@ using System.Threading;
 
 namespace PullThroughDoc
 {
+	// Note: I don't know that this would even be used that often
 	internal class XmlFileSyntaxTriviaProvider : XmlSyntaxTriviaProvider
 	{
 		private static readonly ConcurrentDictionary<string, CustomFileBasedXmlDocumentationProvider> s_cachedDocProv
@@ -18,6 +19,12 @@ namespace PullThroughDoc
 		private static readonly string[] s_refAssembBasePaths = new[]
 		{
 			@"%ProgramFiles(x86)%\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.X"
+		};
+
+		private static readonly HashSet<string> s_redirectToMsCorLib = new HashSet<string>()
+		{
+			"system.private.corelib.dll",
+			// "netstandard.dll"
 		};
 
 		public XmlFileSyntaxTriviaProvider(
@@ -31,13 +38,14 @@ namespace PullThroughDoc
 			_metadataReferences = metadataReferences;
 		}
 
-		protected override SyntaxTriviaList GetSyntaxTriviaCore()
+		protected override string GetWellFormedXml()
 		{
+
 			PortableExecutableReference assembly = FindReference();
 
 			if (assembly == null)
 			{
-				return new SyntaxTriviaList();
+				return "";
 			}
 
 			CustomFileBasedXmlDocumentationProvider docProvider = s_cachedDocProv.GetOrAdd(assembly.FilePath, assembPath =>
@@ -56,12 +64,10 @@ namespace PullThroughDoc
 
 			if (docProvider == null)
 			{
-				return new SyntaxTriviaList();
+				return "";
 			}
 
-			string xml = docProvider.GetDocumentation(_baseSymbol.GetDocumentationCommentId());
-
-			return ParseExternalXml(xml);
+			return docProvider.GetDocumentation(_baseSymbol.GetDocumentationCommentId());
 		}
 
 		private PortableExecutableReference FindReference()
@@ -69,7 +75,7 @@ namespace PullThroughDoc
 			string assemb = _baseSymbol.ContainingAssembly.Name + ".dll";
 			return _metadataReferences
 				.OfType<PortableExecutableReference>()
-				.Where(r => r.Display.EndsWith(assemb))
+				.Where(r => r.FilePath.EndsWith(assemb, StringComparison.OrdinalIgnoreCase))
 				.FirstOrDefault();
 		}
 
@@ -79,7 +85,7 @@ namespace PullThroughDoc
 			string assembName = fileInfo.Name;
 
 			// hack because i don't know
-			if (assembName.Equals("System.Private.Corelib.dll", StringComparison.OrdinalIgnoreCase))
+			if (s_redirectToMsCorLib.Contains(assembName.ToLower()))
 			{
 				assembName = "mscorlib.dll";
 			}

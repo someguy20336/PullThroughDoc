@@ -10,12 +10,21 @@ namespace PullThroughDoc
 		public SpecifiedXmlSyntaxTriviaProvider(string xml, ISymbol targetMember, CancellationToken cancellation)
 			: base(targetMember, cancellation)
 		{
-			_xml = xml;
+			_xml = EnsureWellFormed(xml);
 		}
 
-		protected override SyntaxTriviaList GetSyntaxTriviaCore()
+		protected override string GetWellFormedXml()
 		{
-			return ParseExternalXml(_xml);
+			return _xml;
+		}
+
+		private string EnsureWellFormed(string xml)
+		{
+			if (xml.TrimStart().StartsWith("<summary>", System.StringComparison.OrdinalIgnoreCase))
+			{
+				return $"<doc>{xml}</doc>";
+			}
+			return xml;
 		}
 	}
 }
