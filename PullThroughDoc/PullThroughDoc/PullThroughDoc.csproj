@@ -9,22 +9,21 @@
 
   <PropertyGroup>
     <PackageId>PullThroughDoc</PackageId>
-    <PackageVersion>1.0.0.0</PackageVersion>
-    <Authors>dwhel</Authors>
-    <PackageProjectUrl></PackageProjectUrl>
+    <PackageVersion>1.4.1</PackageVersion>
+    <Authors>Dave W</Authors>
+    <PackageProjectUrl>https://github.com/someguy20336/PullThroughDoc</PackageProjectUrl>
     <PackageIconUrl></PackageIconUrl>
     <RepositoryUrl>https://github.com/someguy20336/PullThroughDoc</RepositoryUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <Description>PullThroughDoc</Description>
-    <PackageReleaseNotes>1.0
-  - Initial Release
-
-1.1
-  - Added support for Visual Studio 2019</PackageReleaseNotes>
-    <Copyright>Copyright</Copyright>
-    <PackageTags>PullThroughDoc, analyzers</PackageTags>
+    <Description>Analyzer and code fix for pulling through documentation from a base class or interface member.</Description>
+    <PackageReleaseNotes></PackageReleaseNotes>
+    <Copyright></Copyright>
+    <PackageTags>PullThroughDoc, analyzers, Documentation</PackageTags>
     <NoPackageAnalysis>true</NoPackageAnalysis>
-    <Version>1.1.0</Version>
+    <Version>1.4.1</Version>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -41,6 +40,14 @@
   <ItemGroup>
     <None Update="tools\*.ps1" CopyToOutputDirectory="Always" Pack="true" PackagePath="" />
     <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <None Include="..\..\icon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
