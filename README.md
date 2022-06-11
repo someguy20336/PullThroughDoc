@@ -1,4 +1,4 @@
-This extension provides an analyzer with code fix that gives you the opportunity to pull through documentation from a base class or interface member.  For example, if you have this interface:
+This analyzer provides a code fix that gives you the opportunity to pull through documentation from a base class or interface member.  For example, if you have this interface:
 
 ```csharp
 
@@ -51,4 +51,12 @@ The diagnostic is hidden and will show up if you open the quick actions lightbul
 
 The "base member" can be located in
   - A class in the same solution, like `MyClass.BaseMember()` (this works the best as the documentation is available in the source code)
-  - An external library, like `Object.ToString()`.  This should mostly work, but does have some limitations and caveats - see [this issue](https://github.com/someguy20336/PullThroughDoc/issues/12) if you are having problems with the analyzer/code fix.  If you don't think your problem falls into any of the caveats outlined, submit a new issue
+  - An external library, like `Object.ToString()`.  This should mostly work, but does have some limitations and caveats - see [this issue](https://github.com/someguy20336/PullThroughDoc/issues/12) if you are having problems with the analyzer/code fix.  If you don't think your problem falls into any of the caveats outlined, submit a new issue.
+
+## Installation
+
+You can install one of two ways
+- [Visual Studio extension](https://marketplace.visualstudio.com/items?itemName=someguy20336.PullThroughDoc)
+  - This will make it available for all projects
+- [Nuget Package](https://www.nuget.org/packages/PullThroughDoc/) (Package Name: `PullThroughDoc`)
+  - This will make it available for the specific project you installed it on
