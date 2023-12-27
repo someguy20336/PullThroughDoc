@@ -32,7 +32,7 @@ namespace PullThroughDoc
 		{
 			IEnumerable<SyntaxTrivia> leadingTrivia = targetMember.GetLeadingTrivia();
 			var indentWhitespace = leadingTrivia.GetIndentation();
-			leadingTrivia = CollapseWhitespace(leadingTrivia.Where(t => !t.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia)));
+			leadingTrivia = leadingTrivia.Where(t => !t.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia)).CollapseWhitespace();
 
 			// Grab only the doc comment trivia.  Seems to include a line break at the end
 			IEnumerable<SyntaxTrivia> nonRegion = pullThroughInfo.GetBaseMemberTrivia()

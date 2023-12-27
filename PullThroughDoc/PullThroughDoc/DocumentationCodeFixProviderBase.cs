@@ -65,21 +65,5 @@ namespace PullThroughDoc
 
 		protected abstract IEnumerable<SyntaxTrivia> GetTriviaFromMember(PullThroughInfo pullThroughInfo, SyntaxNode targetMember);
 
-		protected IEnumerable<SyntaxTrivia> CollapseWhitespace(IEnumerable<SyntaxTrivia> trivia)
-		{
-
-			var triviaList = trivia.ToList();
-			// Cut out duplicate whitespace trivia that might result from removing regions
-			var newList = new List<SyntaxTrivia>() { triviaList[0] };
-			for (int i = 1; i < triviaList.Count; i++)
-			{
-				bool isDoubleWhitespace = triviaList[i - 1].Kind() == triviaList[i].Kind() && triviaList[i].IsKind(SyntaxKind.WhitespaceTrivia);
-				if (!isDoubleWhitespace)
-				{
-					newList.Add(triviaList[i]);
-				}
-			}
-			return newList;
-		}
 	}
 }

@@ -35,7 +35,7 @@ namespace PullThroughDoc
             IEnumerable<SyntaxTrivia> leadingTrivia = targetMember.GetLeadingTrivia();
 			SyntaxTrivia indentWhitespace = leadingTrivia.GetIndentation();
 
-			leadingTrivia = CollapseWhitespace(leadingTrivia.Where(t => !t.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia)));
+			leadingTrivia = leadingTrivia.Where(t => !t.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia)).CollapseWhitespace();
 
             var triviaList = SyntaxFactory.ParseLeadingTrivia("/// <inheritdoc/>");
             return leadingTrivia
