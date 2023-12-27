@@ -6,7 +6,7 @@ using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 
-namespace PullThroughDoc
+namespace PullThroughDoc.CodeFixes
 {
 
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(InsertInheritDocCodeFixProvider)), Shared]
@@ -29,18 +29,18 @@ namespace PullThroughDoc
 			get { return ImmutableArray.Create(PullThroughDocAnalyzer.PullThroughDocDiagId, PullThroughDocAnalyzer.SwapToInheritDocId); }
 		}
 
-		
+
 		protected override IEnumerable<SyntaxTrivia> GetTriviaFromMember(PullThroughInfo pullThroughInfo, SyntaxNode targetMember)
 		{
-            IEnumerable<SyntaxTrivia> leadingTrivia = targetMember.GetLeadingTrivia();
+			IEnumerable<SyntaxTrivia> leadingTrivia = targetMember.GetLeadingTrivia();
 			SyntaxTrivia indentWhitespace = leadingTrivia.GetIndentation();
 
 			leadingTrivia = leadingTrivia.Where(t => !t.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia)).CollapseWhitespace();
 
-            var triviaList = SyntaxFactory.ParseLeadingTrivia("/// <inheritdoc/>");
-            return leadingTrivia
+			var triviaList = SyntaxFactory.ParseLeadingTrivia("/// <inheritdoc/>");
+			return leadingTrivia
 				.Concat(triviaList)
-				.Concat(new [] { SyntaxFactory.CarriageReturnLineFeed })
+				.Concat(new[] { SyntaxFactory.CarriageReturnLineFeed })
 				.Concat(new[] { indentWhitespace });
 		}
 	}

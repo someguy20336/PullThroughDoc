@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PullThroughDoc.CodeFixes;
 
 namespace PullThroughDoc.Test
 {
