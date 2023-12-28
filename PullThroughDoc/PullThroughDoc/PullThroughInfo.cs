@@ -51,6 +51,20 @@ namespace PullThroughDoc
 				return false;
 			}
 
+			if (IsInheritingDoc())
+			{
+				return false;
+			}
+
+			string baseDoc = GetBaseMemberTrivia().ToString();
+			string targetDoc = GetTargetMemberTrivia().ToString();
+
+			// TODO: normalize whitespace
+			if (baseDoc == targetDoc)
+			{
+				return false;
+			}
+
 			return true;
 		}
 
@@ -64,11 +78,6 @@ namespace PullThroughDoc
 		{
 			if (!_lazyBaseMemberTrivia.HasValue)
 			{
-				if (!SupportsPullingThroughDoc())
-				{
-					return new SyntaxTriviaList();
-				}
-
 				var summaryDoc = GetBaseSummaryDocSymbol();
 				if (summaryDoc == null)
 				{
@@ -114,7 +123,7 @@ namespace PullThroughDoc
 			return HasDocComments() && !trivia.ToString().Contains("inheritdoc");
 		}
 
-		public bool SuggestReplaceWithPullThroughDoc()
+		public bool IsInheritingDoc()
 		{
 			SyntaxTriviaList trivia = GetTargetMemberTrivia();
 			return HasDocComments() && trivia.ToString().Contains("inheritdoc");

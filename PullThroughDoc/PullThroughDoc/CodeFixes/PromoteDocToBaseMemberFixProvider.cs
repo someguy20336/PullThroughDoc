@@ -45,7 +45,7 @@ public class PromoteDocToBaseMemberFixProvider : CodeFixProvider
 
 		// No doc comments or it is <inheritdoc> already, don't do anything
 		var solution = document.Project.Solution;
-		if (!pullThroughInfo.HasDocComments() || pullThroughInfo.SuggestReplaceWithPullThroughDoc())
+		if (!pullThroughInfo.HasDocComments() || pullThroughInfo.IsInheritingDoc())
 		{
 			return solution;
 		}

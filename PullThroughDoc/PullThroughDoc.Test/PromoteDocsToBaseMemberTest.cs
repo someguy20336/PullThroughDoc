@@ -114,6 +114,8 @@ public class PromoteDocsToBaseMemberTest : PullThroughDocCodeFixVerifier
 		ExpectDiagnosticAt(test, 16, 26);
 	}
 
+	// TODO: code fix tests
+
 	private void ExpectDiagnosticAt(string text, int line, int col)
 	{
 		var expectedDiagnostic = new DiagnosticResult

@@ -64,7 +64,7 @@ namespace PullThroughDoc
 				{
 					diagDesc = s_swapToInheritDocRule;
 				}
-				else if (pullThroughInfo.SuggestReplaceWithPullThroughDoc())
+				else if (pullThroughInfo.IsInheritingDoc())
 				{
 					diagDesc = s_swapToPullThroughDocRule;
 				}
