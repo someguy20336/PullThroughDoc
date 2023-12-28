@@ -30,18 +30,7 @@ namespace PullThroughDoc.CodeFixes
 		}
 
 
-		protected override IEnumerable<SyntaxTrivia> GetTriviaFromMember(PullThroughInfo pullThroughInfo, SyntaxNode targetMember)
-		{
-			IEnumerable<SyntaxTrivia> leadingTrivia = targetMember.GetLeadingTrivia();
-			SyntaxTrivia indentWhitespace = leadingTrivia.GetIndentation();
-
-			leadingTrivia = leadingTrivia.Where(t => !t.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia)).CollapseWhitespace();
-
-			var triviaList = SyntaxFactory.ParseLeadingTrivia("/// <inheritdoc/>");
-			return leadingTrivia
-				.Concat(triviaList)
-				.Concat(new[] { SyntaxFactory.CarriageReturnLineFeed })
-				.Concat(new[] { indentWhitespace });
-		}
+		protected override IEnumerable<SyntaxTrivia> GetTriviaFromMember(PullThroughInfo pullThroughInfo, SyntaxNode targetMember) 
+			=> SyntaxExtensions.GetInheritDocTriviaForMember(targetMember);
 	}
 }

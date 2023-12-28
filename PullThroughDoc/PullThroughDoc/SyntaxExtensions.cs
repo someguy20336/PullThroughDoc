@@ -41,4 +41,34 @@ internal static class SyntaxExtensions
         }
         return newList;
     }
+
+	public static IEnumerable<SyntaxTrivia> GetTriviaFromBaseMember(PullThroughInfo pullThroughInfo, SyntaxNode targetMember)
+	{
+		IEnumerable<SyntaxTrivia> leadingTrivia = targetMember.GetLeadingTrivia();
+		var indentWhitespace = leadingTrivia.GetIndentation();
+		leadingTrivia = leadingTrivia.Where(t => !t.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia)).CollapseWhitespace();
+
+		// Grab only the doc comment trivia.  Seems to include a line break at the end
+		IEnumerable<SyntaxTrivia> nonRegion = pullThroughInfo.GetBaseMemberTrivia()
+			.Where(tr => tr.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia))
+			.ToList();
+
+		return leadingTrivia
+			.Concat(nonRegion)
+			.Concat(new[] { indentWhitespace });
+	}
+
+	public static IEnumerable<SyntaxTrivia> GetInheritDocTriviaForMember(SyntaxNode targetMember)
+	{
+		IEnumerable<SyntaxTrivia> leadingTrivia = targetMember.GetLeadingTrivia();
+		SyntaxTrivia indentWhitespace = leadingTrivia.GetIndentation();
+
+		leadingTrivia = leadingTrivia.Where(t => !t.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia)).CollapseWhitespace();
+
+		var triviaList = SyntaxFactory.ParseLeadingTrivia("/// <inheritdoc/>");
+		return leadingTrivia
+			.Concat(triviaList)
+			.Concat(new[] { SyntaxFactory.CarriageReturnLineFeed })
+			.Concat(new[] { indentWhitespace });
+	}
 }
