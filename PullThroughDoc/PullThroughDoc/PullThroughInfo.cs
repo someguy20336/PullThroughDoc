@@ -38,6 +38,22 @@ namespace PullThroughDoc
 			return true;
 		}
 
+		public bool SupportsPromotingToBaseMember()
+		{
+			var baseSymbol = GetBaseSummaryDocSymbol();
+			if (baseSymbol == null)
+			{
+				return false;
+			}
+
+			if (baseSymbol.DeclaringSyntaxReferences.Length == 0)
+			{
+				return false;
+			}
+
+			return true;
+		}
+
 		public bool HasBaseSummaryDocumentation()
 		{
 			var trivia = GetBaseMemberTrivia();
@@ -109,7 +125,7 @@ namespace PullThroughDoc
 			return _targetMemberTriviaProvider.GetSyntaxTrivia();
 		}
 
-		private ISymbol GetBaseSummaryDocSymbol()
+		public ISymbol GetBaseSummaryDocSymbol()
 		{
 			if (_summaryDocSymbol != null)
 			{
