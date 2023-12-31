@@ -247,7 +247,6 @@ public class PromoteDocsToBaseMemberTests : PullThroughDocCodeFixVerifier
 	}
 
 	// TODO: also set up a multiple project scenario
-	// TODO: also set up different indentation scenario
 
 	private void ExpectDiagnosticAt(string text, int line, int col)
 	{
