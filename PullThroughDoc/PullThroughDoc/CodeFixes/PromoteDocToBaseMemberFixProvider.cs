@@ -14,7 +14,7 @@ namespace PullThroughDoc.CodeFixes;
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(PromoteDocToBaseMemberFixProvider)), Shared]
 public class PromoteDocToBaseMemberFixProvider : CodeFixProvider
 {
-	public override ImmutableArray<string> FixableDiagnosticIds => throw new NotImplementedException();
+	public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(PromoteDocToBaseMemberAnalyzer.DiagnosticId);
 
 	public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
 	{
@@ -50,22 +50,28 @@ public class PromoteDocToBaseMemberFixProvider : CodeFixProvider
 			return solution;
 		}
 
-		ISymbol baseMemberSymb = pullThroughInfo.GetBaseSummaryDocSymbol();
-		// TODO: Base member needs to exist in this project... so look out for that
-		// Maybe move that logic to the handler class?
-		// TODO: the doc also needs to be different between the two
+		// TODO: would be really nice to simplify this...
 
-		// TODO: Get the trivia from the target member
+		// Update the base member with the target member syntax
+		ISymbol baseMemberSymb = pullThroughInfo.GetBaseSummaryDocSymbol();
+		SyntaxNode baseSyntax = await baseMemberSymb.DeclaringSyntaxReferences.First().GetSyntaxAsync(cancellationToken);
+		var promotedTrivia = SyntaxExtensions.CreateNewTrivia(pullThroughInfo.GetTargetMemberTrivia(), baseSyntax);
+		var newBaseSyntax = baseSyntax.WithLeadingTrivia(promotedTrivia);
+		// TODO: multiple projects!!
+		Document baseDoc = solution.Projects.First().GetDocument(baseSyntax.SyntaxTree);
+		SyntaxNode baseRoot = await baseDoc.GetSyntaxRootAsync(cancellationToken);
+		SyntaxNode newBaseRoot = baseRoot.ReplaceNode(baseSyntax, newBaseSyntax);
+		// TODO: I don't know what this preserver identity does
+		solution = solution.WithDocumentSyntaxRoot(baseDoc.Id, newBaseRoot, PreservationMode.PreserveIdentity);
 
 		// Update the target member with inherit doc
+		document = solution.GetDocument(document.Id);		// could be changed above
 		var inheritDocTrivia = SyntaxExtensions.GetInheritDocTriviaForMember(membDecl);
 		var newMembDecl = membDecl.WithLeadingTrivia(inheritDocTrivia);
 		SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken);
+		// TODO: this isn't replacing the node, probably because it can change.  Figure this out
 		SyntaxNode newRoot = root.ReplaceNode(membDecl, newMembDecl);
 		solution = solution.WithDocumentSyntaxRoot(document.Id, newRoot);
-
-		// TODO Update the base member with that trivia from the target member
-
 
 		return solution;
 	}

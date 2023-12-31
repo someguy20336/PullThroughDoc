@@ -114,7 +114,54 @@ public class PromoteDocsToBaseMemberTest : PullThroughDocCodeFixVerifier
 		ExpectDiagnosticAt(test, 16, 26);
 	}
 
-	// TODO: code fix tests
+
+	[TestMethod]
+	public void CodeFix_TargetMemberHasDiffDoc_SameFile_CodeFixIsApplied()
+	{
+		var oldSource = """
+		namespace ConsoleApplication1
+		{
+			class BaseClass 
+			{
+				/// <summary>
+				/// Base Docs
+				/// </summary>
+				public virtual string TestMember() => null;				
+			}
+
+			class TypeName : BaseClass
+			{				
+				/// <summary>
+				/// Override Docs
+				/// </summary>
+				public override string TestMember() => null;
+			}
+		}
+		""";
+
+		var newSource = """
+		namespace ConsoleApplication1
+		{
+			class BaseClass 
+			{
+				/// <summary>
+				/// Override Docs
+				/// </summary>
+				public virtual string TestMember() => null;				
+			}
+
+			class TypeName : BaseClass
+			{				
+				/// <inheritdoc/>
+				public override string TestMember() => null;
+			}
+		}
+		""";
+		VerifyCSharpFix(oldSource, newSource);
+	}
+
+	// TODO: more code fix tests, i.e. different files
+	// TODO: also set up a multiple project scenario
 
 	private void ExpectDiagnosticAt(string text, int line, int col)
 	{

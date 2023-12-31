@@ -42,14 +42,17 @@ internal static class SyntaxExtensions
         return newList;
     }
 
-	public static IEnumerable<SyntaxTrivia> GetTriviaFromBaseMember(PullThroughInfo pullThroughInfo, SyntaxNode targetMember)
+	public static IEnumerable<SyntaxTrivia> GetTriviaFromBaseMember(PullThroughInfo pullThroughInfo, SyntaxNode targetMember) 
+		=> CreateNewTrivia(pullThroughInfo.GetBaseMemberTrivia(), targetMember);
+
+	public static IEnumerable<SyntaxTrivia> CreateNewTrivia(SyntaxTriviaList usingTrivia, SyntaxNode forMember)
 	{
-		IEnumerable<SyntaxTrivia> leadingTrivia = targetMember.GetLeadingTrivia();
+		IEnumerable<SyntaxTrivia> leadingTrivia = forMember.GetLeadingTrivia();
 		var indentWhitespace = leadingTrivia.GetIndentation();
 		leadingTrivia = leadingTrivia.Where(t => !t.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia)).CollapseWhitespace();
 
 		// Grab only the doc comment trivia.  Seems to include a line break at the end
-		IEnumerable<SyntaxTrivia> nonRegion = pullThroughInfo.GetBaseMemberTrivia()
+		IEnumerable<SyntaxTrivia> nonRegion = usingTrivia
 			.Where(tr => tr.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia))
 			.ToList();
 

@@ -129,7 +129,7 @@ namespace PullThroughDoc
 			return HasDocComments() && trivia.ToString().Contains("inheritdoc");
 		}
 
-		private SyntaxTriviaList GetTargetMemberTrivia()
+		public SyntaxTriviaList GetTargetMemberTrivia()
 		{
 			return _targetMemberTriviaProvider.GetSyntaxTrivia();
 		}
