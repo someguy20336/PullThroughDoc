@@ -170,10 +170,7 @@ public class PromoteDocsToBaseMemberTest : PullThroughDocCodeFixVerifier
 			Id = PromoteDocToBaseMemberAnalyzer.DiagnosticId,
 			Message = String.Format(PromoteDocToBaseMemberAnalyzer.Rule.MessageFormat.ToString()),
 			Severity = DiagnosticSeverity.Hidden,
-			Locations =
-				new[] {
-							new DiagnosticResultLocation("Test0.cs", line, col)
-					}
+			Locations = [ new DiagnosticResultLocation("Test0.cs", line, col) ]
 		};
 
 		VerifyCSharpDiagnostic(text, expectedDiagnostic);

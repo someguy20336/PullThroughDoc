@@ -2,7 +2,7 @@
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System;
+using Microsoft.CodeAnalysis.Editing;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
@@ -50,28 +50,22 @@ public class PromoteDocToBaseMemberFixProvider : CodeFixProvider
 			return solution;
 		}
 
-		// TODO: would be really nice to simplify this...
+		DocumentEditor editor = await DocumentEditor.CreateAsync(document, cancellationToken);
 
 		// Update the base member with the target member syntax
 		ISymbol baseMemberSymb = pullThroughInfo.GetBaseSummaryDocSymbol();
 		SyntaxNode baseSyntax = await baseMemberSymb.DeclaringSyntaxReferences.First().GetSyntaxAsync(cancellationToken);
 		var promotedTrivia = SyntaxExtensions.CreateNewTrivia(pullThroughInfo.GetTargetMemberTrivia(), baseSyntax);
 		var newBaseSyntax = baseSyntax.WithLeadingTrivia(promotedTrivia);
-		// TODO: multiple projects!!
-		Document baseDoc = solution.Projects.First().GetDocument(baseSyntax.SyntaxTree);
-		SyntaxNode baseRoot = await baseDoc.GetSyntaxRootAsync(cancellationToken);
-		SyntaxNode newBaseRoot = baseRoot.ReplaceNode(baseSyntax, newBaseSyntax);
-		// TODO: I don't know what this preserver identity does
-		solution = solution.WithDocumentSyntaxRoot(baseDoc.Id, newBaseRoot, PreservationMode.PreserveIdentity);
+		// TODO: multiple projects/documents!!
+		editor.ReplaceNode(baseSyntax, newBaseSyntax);
 
 		// Update the target member with inherit doc
-		document = solution.GetDocument(document.Id);		// could be changed above
 		var inheritDocTrivia = SyntaxExtensions.GetInheritDocTriviaForMember(membDecl);
 		var newMembDecl = membDecl.WithLeadingTrivia(inheritDocTrivia);
-		SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken);
-		// TODO: this isn't replacing the node, probably because it can change.  Figure this out
-		SyntaxNode newRoot = root.ReplaceNode(membDecl, newMembDecl);
-		solution = solution.WithDocumentSyntaxRoot(document.Id, newRoot);
+		editor.ReplaceNode(membDecl, newMembDecl);
+
+		solution = solution.WithDocumentSyntaxRoot(document.Id, editor.GetChangedRoot());
 
 		return solution;
 	}
