@@ -129,7 +129,20 @@ namespace TestHelper
 			AssertEqualStrings(newSource, actual);
 		}
 
-		private void AssertEqualStrings(string expected, string actual)
+		protected Solution ApplyFixAndGetNewSolution(Document document)
+		{
+			CodeFixProvider codeFixProvider = GetCSharpCodeFixProvider();
+			DiagnosticAnalyzer analyzer = GetCSharpDiagnosticAnalyzer();
+			var analyzerDiagnostics = GetSortedDiagnosticsFromDocuments(analyzer, [document]);
+			var actions = new List<CodeAction>();
+			var context = new CodeFixContext(document, analyzerDiagnostics[0], (a, d) => actions.Add(a), CancellationToken.None);
+			codeFixProvider.RegisterCodeFixesAsync(context).Wait();
+
+			document = ApplyFix(document, actions.ElementAt(0));
+			return document.Project.Solution;
+		}
+
+		protected void AssertEqualStrings(string expected, string actual)
 		{
 			if (expected != actual)
 			{

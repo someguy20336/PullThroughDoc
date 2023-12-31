@@ -48,24 +48,39 @@ public class PromoteDocToBaseMemberFixProvider : CodeFixProvider
 		if (!pullThroughInfo.HasDocComments() || pullThroughInfo.IsInheritingDoc())
 		{
 			return solution;
-		}
-
-		DocumentEditor editor = await DocumentEditor.CreateAsync(document, cancellationToken);
+		}	
 
 		// Update the base member with the target member syntax
 		ISymbol baseMemberSymb = pullThroughInfo.GetBaseSummaryDocSymbol();
 		SyntaxNode baseSyntax = await baseMemberSymb.DeclaringSyntaxReferences.First().GetSyntaxAsync(cancellationToken);
+		Document baseMemberDoc = solution.Projects.Select(p => p.GetDocument(baseSyntax.SyntaxTree)).FirstOrDefault(d => d is not null);
+		if (baseMemberDoc is null)
+		{
+			return solution;
+		}
+
+		// Create document editors
+		bool isSameDoc = baseMemberDoc.Id.Equals(document.Id);
+		DocumentEditor targetDocEditor = await DocumentEditor.CreateAsync(document, cancellationToken);
+		DocumentEditor baseDocEditor = isSameDoc
+			? targetDocEditor 
+			: await DocumentEditor.CreateAsync(baseMemberDoc, cancellationToken);
+
+		// Update the base member document
 		var promotedTrivia = SyntaxExtensions.CreateNewTrivia(pullThroughInfo.GetTargetMemberTrivia(), baseSyntax);
 		var newBaseSyntax = baseSyntax.WithLeadingTrivia(promotedTrivia);
-		// TODO: multiple projects/documents!!
-		editor.ReplaceNode(baseSyntax, newBaseSyntax);
+		baseDocEditor.ReplaceNode(baseSyntax, newBaseSyntax);
 
 		// Update the target member with inherit doc
 		var inheritDocTrivia = SyntaxExtensions.GetInheritDocTriviaForMember(membDecl);
 		var newMembDecl = membDecl.WithLeadingTrivia(inheritDocTrivia);
-		editor.ReplaceNode(membDecl, newMembDecl);
+		targetDocEditor.ReplaceNode(membDecl, newMembDecl);
 
-		solution = solution.WithDocumentSyntaxRoot(document.Id, editor.GetChangedRoot());
+		solution = solution.WithDocumentSyntaxRoot(document.Id, targetDocEditor.GetChangedRoot());
+		if (!isSameDoc)
+		{
+			solution = solution.WithDocumentSyntaxRoot(baseMemberDoc.Id, baseDocEditor.GetChangedRoot());
+		}
 
 		return solution;
 	}

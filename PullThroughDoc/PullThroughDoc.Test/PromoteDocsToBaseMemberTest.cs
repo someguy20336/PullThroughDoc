@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PullThroughDoc.CodeFixes;
 using System;
+using System.Linq;
 using TestHelper;
 
 namespace PullThroughDoc.Test;
@@ -160,8 +161,67 @@ public class PromoteDocsToBaseMemberTest : PullThroughDocCodeFixVerifier
 		VerifyCSharpFix(oldSource, newSource);
 	}
 
-	// TODO: more code fix tests, i.e. different files
+	[TestMethod]
+	public void CodeFix_TargetMemberHasDiffDoc_DiffFilesSameProject_CodeFixIsApplied()
+	{
+		Project proj = CreateProject([
+			"""
+			namespace ConsoleApplication1
+			{
+				class BaseClass 
+				{				
+					/// <summary>
+					/// Base Docs
+					/// </summary>
+					public virtual string TestMember() => null;
+				}
+			}
+			""",
+			"""
+			namespace ConsoleApplication1
+			{
+				class TypeName : BaseClass
+				{				
+					/// <summary>
+					/// Override Docs
+					/// </summary>
+					public override string TestMember() => null;
+				}
+			}
+			""",
+		]);
+		Solution newSol = ApplyFixAndGetNewSolution(proj.Documents.Last());
+
+		string newFile1 = GetStringFromDocument(newSol.Projects.First().Documents.First());
+		string newFile2 = GetStringFromDocument(newSol.Projects.First().Documents.Last());
+
+		AssertEqualStrings("""
+			namespace ConsoleApplication1
+			{
+				class BaseClass 
+				{				
+					/// <summary>
+					/// Override Docs
+					/// </summary>
+					public virtual string TestMember() => null;
+				}
+			}
+			""", newFile1);
+
+		AssertEqualStrings("""
+			namespace ConsoleApplication1
+			{
+				class TypeName : BaseClass
+				{				
+					/// <inheritdoc/>
+					public override string TestMember() => null;
+				}
+			}
+			""", newFile2);
+	}
+
 	// TODO: also set up a multiple project scenario
+	// TODO: also set up different indentation scenario
 
 	private void ExpectDiagnosticAt(string text, int line, int col)
 	{
