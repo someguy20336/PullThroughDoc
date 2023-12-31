@@ -25,6 +25,16 @@ internal static class SyntaxExtensions
 		return leadingTrivia.Last();
 	}
 
+	public static string ToNormalizedIndentationString(this SyntaxTriviaList trivia)
+	{
+		string[] parts = trivia.ToString().Split(System.Environment.NewLine.ToCharArray(), System.StringSplitOptions.RemoveEmptyEntries);
+		for (int i = 0; i < parts.Length; i++)
+		{
+			parts[i] = parts[i].Trim();
+		}
+		return string.Join(System.Environment.NewLine, parts);
+	}
+
     public static IEnumerable<SyntaxTrivia> CollapseWhitespace(this IEnumerable<SyntaxTrivia> trivia)
     {
 

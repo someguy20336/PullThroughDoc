@@ -56,10 +56,9 @@ namespace PullThroughDoc
 				return false;
 			}
 
-			string baseDoc = GetBaseMemberTrivia().ToString();
-			string targetDoc = GetTargetMemberTrivia().ToString();
+			string baseDoc = GetBaseMemberTrivia().ToNormalizedIndentationString();
+			string targetDoc = GetTargetMemberTrivia().ToNormalizedIndentationString();
 
-			// TODO: normalize whitespace
 			if (baseDoc == targetDoc)
 			{
 				return false;

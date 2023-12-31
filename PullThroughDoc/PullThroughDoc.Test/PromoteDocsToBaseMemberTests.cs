@@ -10,7 +10,7 @@ using TestHelper;
 namespace PullThroughDoc.Test;
 
 [TestClass]
-public class PromoteDocsToBaseMemberTest : PullThroughDocCodeFixVerifier
+public class PromoteDocsToBaseMemberTests : PullThroughDocCodeFixVerifier
 {
 	protected override CodeFixProvider CodeFixProvider => new PromoteDocToBaseMemberFixProvider();
 
@@ -52,6 +52,32 @@ public class PromoteDocsToBaseMemberTest : PullThroughDocCodeFixVerifier
 				
 			}
 
+			class TypeName : BaseClass
+			{
+				/// <summary>
+				/// Base Docs
+				/// </summary>
+				public override string TestMember() => null;
+			}
+		}
+		""";
+		VerifyCSharpDiagnostic(test);
+	}
+
+	[TestMethod]
+	public void Analyzer_BaseClassHasSameTrivia_DifferentIndentation_DiagnosticNotFound()
+	{
+		var test = """
+		class BaseClass 
+		{
+			/// <summary>
+			/// Base Docs
+			/// </summary>
+			public virtual string TestMember() => null;
+				
+		}
+		namespace ConsoleApplication1
+		{
 			class TypeName : BaseClass
 			{
 				/// <summary>
