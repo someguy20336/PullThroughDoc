@@ -101,3 +101,12 @@ You can install one of two ways
   - This will make it available for all projects
 - [Nuget Package](https://www.nuget.org/packages/PullThroughDoc/) (Package Name: `PullThroughDoc`)
   - This will make it available for the specific project you installed it on
+
+## Diagnostics:
+The following diagnostics are provided (with code fixes)
+- `PullThroughDoc01` - Gives you the option to insert the `<summary>` tag from the base member to the overridden member, or just use `<inheritdoc>`
+- `PullThroughDoc02` - Swaps a `<summary>` documentation with `<inheritdoc>`
+- `PullThroughDoc03` - Swaps `<inheritdoc>` to `<summary>` from the base member
+- `PullThroughDoc04` - Promotes the `<summary>` documentation from the override member to the base member and inserts `<inheritdoc>` in it's place
+
+TODO: how to suppress (link)
