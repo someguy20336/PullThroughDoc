@@ -174,7 +174,7 @@ public class PromoteDocsToBaseMemberTests : PullThroughDocCodeFixVerifier
 
 			class TypeName : BaseClass
 			{				
-				/// <inheritdoc/>
+				/// <inheritdoc />
 				public override string TestMember() => null;
 			}
 		}
@@ -234,7 +234,7 @@ public class PromoteDocsToBaseMemberTests : PullThroughDocCodeFixVerifier
 			{
 				class TypeName : BaseClass
 				{				
-					/// <inheritdoc/>
+					/// <inheritdoc />
 					public override string TestMember() => null;
 				}
 			}

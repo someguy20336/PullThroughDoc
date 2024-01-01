@@ -39,7 +39,7 @@ namespace PullThroughDoc.Test
         class TypeName : BaseClass
         {
 
-			/// <inheritdoc/>
+			/// <inheritdoc />
 			public override string DoThing() {}
         }
     }";
@@ -74,7 +74,7 @@ namespace PullThroughDoc.Test
 		}
         class TypeName : BaseClass
         {
-			/// <inheritdoc/>
+			/// <inheritdoc />
 			public override string DoThing() {}
         }
     }";
@@ -109,7 +109,7 @@ namespace PullThroughDoc.Test
 		}
         class TypeName : BaseClass
         {
-			/// <inheritdoc/>
+			/// <inheritdoc />
 			public override string DoThing() {}
         }
     }";
@@ -148,7 +148,7 @@ namespace PullThroughDoc.Test
         {
 
 
-			/// <inheritdoc/>
+			/// <inheritdoc />
 			public override string DoThing() {}
         }
     }";
@@ -185,7 +185,7 @@ namespace PullThroughDoc.Test
 		}
         class TypeName : BaseClass
         {
-			/// <inheritdoc/>
+			/// <inheritdoc />
 			public override string DoThing() {}
         }
     }";

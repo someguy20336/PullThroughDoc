@@ -1,10 +1,8 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.CSharp;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
-using System.Linq;
 
 namespace PullThroughDoc.CodeFixes
 {
@@ -20,7 +18,7 @@ namespace PullThroughDoc.CodeFixes
 					return "Change to <inheritdoc />";
 				case PullThroughDocAnalyzer.PullThroughDocDiagId:
 				default:
-					return "Insert <inhericdoc />";
+					return "Insert <inheritdoc />";
 			}
 		}
 

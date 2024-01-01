@@ -78,7 +78,7 @@ internal static class SyntaxExtensions
 
 		leadingTrivia = leadingTrivia.Where(t => !t.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia)).CollapseWhitespace();
 
-		var triviaList = SyntaxFactory.ParseLeadingTrivia("/// <inheritdoc/>");
+		var triviaList = SyntaxFactory.ParseLeadingTrivia("/// <inheritdoc />");
 		return leadingTrivia
 			.Concat(triviaList)
 			.Concat(new[] { SyntaxFactory.CarriageReturnLineFeed })
