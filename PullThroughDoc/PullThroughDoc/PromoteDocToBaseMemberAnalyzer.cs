@@ -12,8 +12,9 @@ public class PromoteDocToBaseMemberAnalyzer : DiagnosticAnalyzer
 	public const string DiagnosticId = "PullThroughDoc04";
 
 	public static readonly DiagnosticDescriptor Rule
-		= new(DiagnosticId, "Set as base doc  (todo name)", "Set as base doc (todo name)",
-			"Documentation", DiagnosticSeverity.Hidden, isEnabledByDefault: true, description: "Todo this description");
+		= new(DiagnosticId, "Promote doc to base member", "Promote doc to base member",
+			"Documentation", DiagnosticSeverity.Hidden, isEnabledByDefault: true, 
+			description: "Promotes the documentation of this member to the base member and inserts <inheritdoc/>.");
 
 
 	public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics

@@ -26,7 +26,7 @@ public class PromoteDocToBaseMemberFixProvider : CodeFixProvider
 		var declaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<MemberDeclarationSyntax>().First();
 
 		// Register a code action that will invoke the fix.
-		string title = "Promote to base member (TODO)";
+		string title = "Promote doc to base member";
 		context.RegisterCodeFix(
 			CodeAction.Create(
 				title: title,
