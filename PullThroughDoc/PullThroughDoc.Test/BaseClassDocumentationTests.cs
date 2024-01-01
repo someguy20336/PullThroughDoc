@@ -11,7 +11,7 @@ namespace PullThroughDoc.Test;
 public class BaseClassDocumentationTests : PullThroughDocCodeFixVerifier
 {
 
-	protected override CodeFixProvider CodeFixProvider => new PullThroughDocCodeFixProvider();
+	protected override CodeFixProvider GetCSharpCodeFixProvider() => new PullThroughDocCodeFixProvider();
 
 
 	[TestMethod]

@@ -14,7 +14,7 @@ namespace PullThroughDoc.CodeFixes;
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(PromoteDocToBaseMemberFixProvider)), Shared]
 public class PromoteDocToBaseMemberFixProvider : CodeFixProvider
 {
-	public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(PromoteDocToBaseMemberAnalyzer.DiagnosticId);
+	public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(PromoteDocToBaseMemberDiagnostic.DiagnosticId);
 
 	public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
 	{

@@ -11,7 +11,7 @@ namespace PullThroughDoc.Test;
 public class ExternalReferenceTests : PullThroughDocCodeFixVerifier
 {
 	private string _docXml;
-	protected override CodeFixProvider CodeFixProvider => new PullThroughDocCodeFixProvider();
+	protected override CodeFixProvider GetCSharpCodeFixProvider() => new PullThroughDocCodeFixProvider();
 
 	public override List<MetadataReference> References
 	{

@@ -1,5 +1,6 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.Resources;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,6 +48,22 @@ namespace TestHelper
 			VerifyDiagnostics(sources, LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), expected);
 		}
 
+		protected void VeriftySpecificDiagnosticIsNotPresent(string source, string diagId)
+		{
+			var diagnostics = GetSortedDiagnostics([ source ], LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer());
+			Assert.IsFalse(diagnostics.Any(d => d.Id == diagId));
+		}
+
+
+		protected void VeriftySpecificDiagnosticIsPresent(string source, DiagnosticResult expected)
+		{
+			DiagnosticAnalyzer analyzer = GetCSharpDiagnosticAnalyzer();
+			var diagnostics = GetSortedDiagnostics([source], LanguageNames.CSharp, analyzer);
+			diagnostics = diagnostics.Where(d => d.Id == expected.Id).ToArray();
+			Assert.IsTrue(diagnostics.Length > 0);
+			VerifyDiagnosticResults(diagnostics, analyzer, expected);
+
+		}
 
 		/// <summary>
 		/// General method that gets a collection of actual diagnostics found in the source after the analyzer is run, 

@@ -51,7 +51,7 @@ namespace PullThroughDoc
 				return false;
 			}
 
-			if (IsInheritingDoc())
+			if (IsInheritingDoc() || !HasDocComments())
 			{
 				return false;
 			}

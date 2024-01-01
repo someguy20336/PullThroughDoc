@@ -12,12 +12,7 @@ namespace PullThroughDoc.Test;
 [TestClass]
 public class PromoteDocsToBaseMemberTests : PullThroughDocCodeFixVerifier
 {
-	protected override CodeFixProvider CodeFixProvider => new PromoteDocToBaseMemberFixProvider();
-
-	protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
-	{
-		return new PromoteDocToBaseMemberAnalyzer();
-	}
+	protected override CodeFixProvider GetCSharpCodeFixProvider() => new PromoteDocToBaseMemberFixProvider();
 
 	[TestMethod]
 	public void Analyzer_BaseClassNotInProject_DiagnosticNotFound()
@@ -61,7 +56,7 @@ public class PromoteDocsToBaseMemberTests : PullThroughDocCodeFixVerifier
 			}
 		}
 		""";
-		VerifyCSharpDiagnostic(test);
+		VeriftySpecificDiagnosticIsNotPresent(test, PromoteDocToBaseMemberDiagnostic.DiagnosticId);
 	}
 
 	[TestMethod]
@@ -87,7 +82,7 @@ public class PromoteDocsToBaseMemberTests : PullThroughDocCodeFixVerifier
 			}
 		}
 		""";
-		VerifyCSharpDiagnostic(test);
+		VeriftySpecificDiagnosticIsNotPresent(test, PromoteDocToBaseMemberDiagnostic.DiagnosticId);
 	}
 
 	[TestMethod]
@@ -112,7 +107,7 @@ public class PromoteDocsToBaseMemberTests : PullThroughDocCodeFixVerifier
 			}
 		}
 		""";
-		VerifyCSharpDiagnostic(test);
+		VeriftySpecificDiagnosticIsNotPresent(test, PromoteDocToBaseMemberDiagnostic.DiagnosticId);
 	}
 
 	[TestMethod]
@@ -252,12 +247,12 @@ public class PromoteDocsToBaseMemberTests : PullThroughDocCodeFixVerifier
 	{
 		var expectedDiagnostic = new DiagnosticResult
 		{
-			Id = PromoteDocToBaseMemberAnalyzer.DiagnosticId,
-			Message = String.Format(PromoteDocToBaseMemberAnalyzer.Rule.MessageFormat.ToString()),
+			Id = PromoteDocToBaseMemberDiagnostic.DiagnosticId,
+			Message = String.Format(PromoteDocToBaseMemberDiagnostic.Rule.MessageFormat.ToString()),
 			Severity = DiagnosticSeverity.Hidden,
 			Locations = [ new DiagnosticResultLocation("Test0.cs", line, col) ]
 		};
 
-		VerifyCSharpDiagnostic(text, expectedDiagnostic);
+		VeriftySpecificDiagnosticIsPresent(text, expectedDiagnostic);
 	}
 }

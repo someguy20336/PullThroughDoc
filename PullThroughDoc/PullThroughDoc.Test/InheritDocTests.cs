@@ -7,8 +7,8 @@ namespace PullThroughDoc.Test
 	[TestClass]
 	public class InheritDocTests : PullThroughDocCodeFixVerifier
 	{
-		protected override CodeFixProvider CodeFixProvider => new InsertInheritDocCodeFixProvider();
-		
+		protected override CodeFixProvider GetCSharpCodeFixProvider() => new InsertInheritDocCodeFixProvider();
+
 		[TestMethod]
 		public void BaseClass_WithExtraSpace_AddsInhertiDoc()
 		{
@@ -113,7 +113,7 @@ namespace PullThroughDoc.Test
 			public override string DoThing() {}
         }
     }";
-			VerifyCSharpFix(test, fixtest);
+			VerifyCSharpFix(test, fixtest, 0);
 		}
 
         [TestMethod]
@@ -152,7 +152,7 @@ namespace PullThroughDoc.Test
 			public override string DoThing() {}
         }
     }";
-            VerifyCSharpFix(test, fixtest);
+            VerifyCSharpFix(test, fixtest, 0);
         }
 
         [TestMethod]
@@ -189,7 +189,7 @@ namespace PullThroughDoc.Test
 			public override string DoThing() {}
         }
     }";
-            VerifyCSharpFix(test, fixtest);
+            VerifyCSharpFix(test, fixtest, 0);
         }
     }
 }

@@ -7,7 +7,7 @@ namespace PullThroughDoc.Test;
 [TestClass]
 public class GeneralTests : PullThroughDocCodeFixVerifier
 {
-	protected override CodeFixProvider CodeFixProvider => new PullThroughDocCodeFixProvider();
+	protected override CodeFixProvider GetCSharpCodeFixProvider() => new PullThroughDocCodeFixProvider();
 
 	//No diagnostics expected to show up
 	[TestMethod]

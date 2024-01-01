@@ -11,7 +11,7 @@ namespace PullThroughDoc.Test;
 public class InterfaceDocumentationTests : PullThroughDocCodeFixVerifier
 {
 
-	protected override CodeFixProvider CodeFixProvider => new PullThroughDocCodeFixProvider();
+	protected override CodeFixProvider GetCSharpCodeFixProvider() => new PullThroughDocCodeFixProvider();
 
 	//Diagnostic and CodeFix both triggered and checked for
 	[TestMethod]
