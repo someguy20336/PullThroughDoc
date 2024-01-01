@@ -42,12 +42,53 @@ class MyClass : IMyInterface
 }
 ```
 
+Finally, it also offers the ability to "promote" documentation to a base class member, in the event that the derived member is correct.  For example, before:
+```csharp
+
+class BaseClass
+{
+    /// <summary>
+    /// This doc is wrong
+    /// </summary>
+    public virtual void DoSomething() {}
+}
+
+class Derived : BaseClass
+{
+    /// <summary>
+    /// This doc is right
+    /// </summary>
+    public override void DoSomething() {}
+}
+
+```
+
+After:
+```csharp
+
+class BaseClass
+{
+    /// <summary>
+    /// This doc is right
+    /// </summary>
+    public virtual void DoSomething() {}
+}
+
+class Derived : BaseClass
+{
+    /// <inheritdoc />
+    public override void DoSomething() {}
+}
+
+```
+
 The diagnostic is hidden and will show up if you open the quick actions lightbulb when:
 - Your cursor is on a member name
 - One of the following is true:
   - The base member (see below) has documentation and the override member does not
   - The override member has `<summary>` documentation (giving you the option to switch to `<inheritdoc>`)
   - The override member has `<inheritdoc>` (giving you the option to switch to `<summary>`)
+  - The override member has `<summary>` documentation and it is different than the base member.  This will give you the opportunity to promote the docs to the base member.
 
 The "base member" can be located in
   - A class in the same solution, like `MyClass.BaseMember()` (this works the best as the documentation is available in the source code)
