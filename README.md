@@ -109,4 +109,7 @@ The following diagnostics are provided (with code fixes)
 - `PullThroughDoc03` - Swaps `<inheritdoc>` to `<summary>` from the base member
 - `PullThroughDoc04` - Promotes the `<summary>` documentation from the override member to the base member and inserts `<inheritdoc>` in it's place
 
-TODO: how to suppress (link)
+If you would like to disable any of these, use the [editor config](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/configuration-options#severity-level).  Example:
+```
+dotnet_diagnostic.PullThroughDoc04.severity = none
+```
