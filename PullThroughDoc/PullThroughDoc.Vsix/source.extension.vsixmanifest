@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
-	<Metadata>
-		<Identity Id="PullThroughDoc.85320641-1fcc-4f68-ad86-4b7046c2ec8d" Version="1.4.1" Language="en-US" Publisher="Dave W"/>
-		<DisplayName>Pull Through Documentation</DisplayName>
-		<Description xml:space="preserve">This analyzer allows you to pull through documentation from a base class or interface member for a method or property.  It also gives the option to insert &lt;inheritdoc&gt;.</Description>
-		<MoreInfo>https://github.com/someguy20336/PullThroughDoc</MoreInfo>
-		<Icon>icon.png</Icon>
-	</Metadata>
-	<Installation>
-		<InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[15.0,17.0)" />
-		<InstallationTarget Version="[17.0,18.0)" Id="Microsoft.VisualStudio.Community">
-			<ProductArchitecture>amd64</ProductArchitecture>
-		</InstallationTarget>
-	</Installation>
-	<Dependencies>
-		<Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
-	</Dependencies>
-	<Assets>
-		<Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="PullThroughDoc" Path="|PullThroughDoc|"/>
-		<Asset Type="Microsoft.VisualStudio.Analyzer" d:Source="Project" d:ProjectName="PullThroughDoc" Path="|PullThroughDoc|"/>
-	</Assets>
-	<Prerequisites>
-		<Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0,)" DisplayName="Visual Studio core editor" />
-		<Prerequisite Id="Microsoft.VisualStudio.Component.Roslyn.LanguageServices" Version="[15.0,)" DisplayName="Roslyn Language Services" />
-	</Prerequisites>
+    <Metadata>
+        <Identity Id="PullThroughDoc.85320641-1fcc-4f68-ad86-4b7046c2ec8d" Version="1.5.0" Language="en-US" Publisher="Dave W"/>
+        <DisplayName>Pull Through Documentation</DisplayName>
+        <Description xml:space="preserve">This analyzer allows you to pull through documentation from a base class or interface member for a method or property.  It also gives the option to insert &lt;inheritdoc&gt;.</Description>
+        <MoreInfo>https://github.com/someguy20336/PullThroughDoc</MoreInfo>
+        <Icon>icon.png</Icon>
+    </Metadata>
+    <Installation>
+        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[15.0,17.0)" />
+        <InstallationTarget Version="[17.0,18.0)" Id="Microsoft.VisualStudio.Community">
+            <ProductArchitecture>amd64</ProductArchitecture>
+        </InstallationTarget>
+    </Installation>
+    <Dependencies>
+        <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
+    </Dependencies>
+    <Assets>
+        <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="PullThroughDoc" Path="|PullThroughDoc|"/>
+        <Asset Type="Microsoft.VisualStudio.Analyzer" d:Source="Project" d:ProjectName="PullThroughDoc" Path="|PullThroughDoc|"/>
+    </Assets>
+    <Prerequisites>
+        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0,)" DisplayName="Visual Studio core editor" />
+        <Prerequisite Id="Microsoft.VisualStudio.Component.Roslyn.LanguageServices" Version="[15.0,)" DisplayName="Roslyn Language Services" />
+    </Prerequisites>
 </PackageManifest>
