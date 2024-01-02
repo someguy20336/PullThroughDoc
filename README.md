@@ -91,9 +91,9 @@ The diagnostic is hidden and will show up if you open the quick actions lightbul
   - The override member has `<summary>` documentation and it is different than the base member.  This will give you the opportunity to promote the docs to the base member.
 
 The "base member" can be located in
-  - A class in the same solution, like `MyClass.BaseMember()` (this works the best as the documentation is available in the source code)
-  - An external library, like `Object.ToString()`.  This should mostly work, but does have some limitations and caveats - see [this issue](https://github.com/someguy20336/PullThroughDoc/issues/12) if you are having problems with the analyzer/code fix.  If you don't think your problem falls into any of the caveats outlined, submit a new issue.
-  - For the case in which you are trying to promote the documentation, the base member must exist in the source code of the solution.
+- A class in the same solution, like `MyClass.BaseMember()` (this works the best as the documentation is available in the source code)
+- An external library, like `Object.ToString()`.  This should mostly work, but does have some limitations and caveats - see [this issue](https://github.com/someguy20336/PullThroughDoc/issues/12) if you are having problems with the analyzer/code fix.  If you don't think your problem falls into any of the caveats outlined, submit a new issue.
+  - Note: For the case in which you are trying to promote the documentation, external libraries are not supported.
 
 ## Installation
 
