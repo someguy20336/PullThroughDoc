@@ -3,37 +3,38 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PullThroughDoc.Test.Helpers;
 using System.Collections.Generic;
+using PullThroughDoc.CodeFixes;
 
-namespace PullThroughDoc.Test
+namespace PullThroughDoc.Test;
+
+[TestClass]
+public class ExternalReferenceTests : PullThroughDocCodeFixVerifier
 {
-	[TestClass]
-	public class ExternalReferenceTests : PullThroughDocCodeFixVerifier
+	private string _docXml;
+	protected override CodeFixProvider GetCSharpCodeFixProvider() => new PullThroughDocCodeFixProvider();
+
+	public override List<MetadataReference> References
 	{
-		private string _docXml;
-		protected override CodeFixProvider CodeFixProvider => new PullThroughDocCodeFixProvider();
-
-		public override List<MetadataReference> References
+		get
 		{
-			get
-			{
-				var refs = base.References;
-				refs[0] = MetadataReference.CreateFromFile(typeof(object).Assembly.Location, documentation: new FakeVisualStudioDocumentationProvider(_docXml));
-				refs.Add(MetadataReference.CreateFromFile(typeof(OverridableClass).Assembly.Location));
-				return refs;
-			}
+			var refs = base.References;
+			refs[0] = MetadataReference.CreateFromFile(typeof(object).Assembly.Location, documentation: new FakeVisualStudioDocumentationProvider(_docXml));
+			refs.Add(MetadataReference.CreateFromFile(typeof(OverridableClass).Assembly.Location));
+			return refs;
 		}
+	}
 
-		[TestInitialize]
-		public void Initialize()
-		{
-			_docXml = "";
-		}
+	[TestInitialize]
+	public void Initialize()
+	{
+		_docXml = "";
+	}
 
-		[TestMethod]
-		public void OverrideExternalMethod_PullsThrough()
-		{
+	[TestMethod]
+	public void OverrideExternalMethod_PullsThrough()
+	{
 
-			_docXml = @"
+		_docXml = @"
 <doc>
   <summary>Searches things.</summary>
   <param name=""value"">The thing to find</param>
@@ -41,7 +42,7 @@ namespace PullThroughDoc.Test
 </doc>
 ";
 
-			var test = @"
+		var test = @"
 using System.Collections;
 
 namespace ConsoleApplication1
@@ -52,9 +53,9 @@ namespace ConsoleApplication1
 	}
 }";
 
-			ExpectPullThroughDiagnosticAt(test, "BinarySearch", 8, 23);
+		ExpectPullThroughDiagnosticAt(test, "BinarySearch", 8, 23);
 
-			var fixtest = @"
+		var fixtest = @"
 using System.Collections;
 
 namespace ConsoleApplication1
@@ -67,28 +68,28 @@ namespace ConsoleApplication1
 		public override int BinarySearch(object value) => 1;
 	}
 }";
-			VerifyCSharpFix(test, fixtest);
-		}
+		VerifyCSharpFix(test, fixtest);
+	}
 
-		// This example is taken from JsonConverter in Newtonsoft.Json
-		// Also, still not perfect... some weird stuff with the "returns" and line breaks is happening, but who cares
-		[TestMethod]
-		public void MultiLineDocumentation_PullsThroughMultiLine()
-		{
-			_docXml = @"
+	// This example is taken from JsonConverter in Newtonsoft.Json
+	// Also, still not perfect... some weird stuff with the "returns" and line breaks is happening, but who cares
+	[TestMethod]
+	public void MultiLineDocumentation_PullsThroughMultiLine()
+	{
+		_docXml = @"
 <doc>
-            <summary>
-            Summary Part
-            </summary>
-            <param name=""objectType"">Type of the object.</param>
-            <returns>
-                <c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
-            </returns>
-        </doc>";
+			<summary>
+			Summary Part
+			</summary>
+			<param name=""objectType"">Type of the object.</param>
+			<returns>
+				<c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
+			</returns>
+		</doc>";
 
 
 
-			var test = @"
+		var test = @"
 using System.Collections;
 
 namespace ConsoleApplication1
@@ -99,7 +100,7 @@ namespace ConsoleApplication1
 	}
 }";
 
-			var fixtest = @"
+		var fixtest = @"
 using System.Collections;
 
 namespace ConsoleApplication1
@@ -115,9 +116,7 @@ namespace ConsoleApplication1
 		public override int BinarySearch(object value) => 1;
 	}
 }";
-			VerifyCSharpFix(test, fixtest);
-		}
-
+		VerifyCSharpFix(test, fixtest);
 	}
 
 }

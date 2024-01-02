@@ -42,12 +42,53 @@ class MyClass : IMyInterface
 }
 ```
 
+Finally, it also offers the ability to "promote" documentation to a base class member, in the event that the derived member is correct.  For example, before:
+```csharp
+
+class BaseClass
+{
+    /// <summary>
+    /// This doc is wrong
+    /// </summary>
+    public virtual void DoSomething() {}
+}
+
+class Derived : BaseClass
+{
+    /// <summary>
+    /// This doc is right
+    /// </summary>
+    public override void DoSomething() {}
+}
+
+```
+
+After:
+```csharp
+
+class BaseClass
+{
+    /// <summary>
+    /// This doc is right
+    /// </summary>
+    public virtual void DoSomething() {}
+}
+
+class Derived : BaseClass
+{
+    /// <inheritdoc />
+    public override void DoSomething() {}
+}
+
+```
+
 The diagnostic is hidden and will show up if you open the quick actions lightbulb when:
 - Your cursor is on a member name
 - One of the following is true:
   - The base member (see below) has documentation and the override member does not
   - The override member has `<summary>` documentation (giving you the option to switch to `<inheritdoc>`)
   - The override member has `<inheritdoc>` (giving you the option to switch to `<summary>`)
+  - The override member has `<summary>` documentation and it is different than the base member.  This will give you the opportunity to promote the docs to the base member.
 
 The "base member" can be located in
   - A class in the same solution, like `MyClass.BaseMember()` (this works the best as the documentation is available in the source code)
@@ -60,3 +101,15 @@ You can install one of two ways
   - This will make it available for all projects
 - [Nuget Package](https://www.nuget.org/packages/PullThroughDoc/) (Package Name: `PullThroughDoc`)
   - This will make it available for the specific project you installed it on
+
+## Diagnostics Added
+The following diagnostics are provided (with code fixes)
+- `PullThroughDoc01` - Gives you the option to insert the `<summary>` tag from the base member to the overridden member, or just use `<inheritdoc>`
+- `PullThroughDoc02` - Swaps a `<summary>` documentation with `<inheritdoc>`
+- `PullThroughDoc03` - Swaps `<inheritdoc>` to `<summary>` from the base member
+- `PullThroughDoc04` - Promotes the `<summary>` documentation from the override member to the base member and inserts `<inheritdoc>` in it's place
+
+If you would like to disable any of these, use the [editor config](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/configuration-options#severity-level).  Example:
+```
+dotnet_diagnostic.PullThroughDoc04.severity = none
+```

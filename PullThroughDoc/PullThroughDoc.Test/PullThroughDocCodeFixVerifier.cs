@@ -1,5 +1,4 @@
 ﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System;
 using TestHelper;
@@ -8,8 +7,6 @@ namespace PullThroughDoc.Test
 {
 	public abstract class PullThroughDocCodeFixVerifier : CodeFixVerifier
 	{
-		protected abstract CodeFixProvider CodeFixProvider { get; }
-
 		protected void ExpectPullThroughDiagnosticAt(string text, string member, int line, int col)
 		{
 			var expectedDiagnostic = new DiagnosticResult
@@ -24,11 +21,6 @@ namespace PullThroughDoc.Test
 			};
 
 			VerifyCSharpDiagnostic(text, expectedDiagnostic);
-		}
-
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
-		{
-			return CodeFixProvider;
 		}
 
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()

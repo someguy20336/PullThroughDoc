@@ -1,13 +1,14 @@
 ﻿using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PullThroughDoc.CodeFixes;
 
 namespace PullThroughDoc.Test
 {
 	[TestClass]
 	public class InheritDocTests : PullThroughDocCodeFixVerifier
 	{
-		protected override CodeFixProvider CodeFixProvider => new InsertInheritDocCodeFixProvider();
-		
+		protected override CodeFixProvider GetCSharpCodeFixProvider() => new InsertInheritDocCodeFixProvider();
+
 		[TestMethod]
 		public void BaseClass_WithExtraSpace_AddsInhertiDoc()
 		{
@@ -38,7 +39,7 @@ namespace PullThroughDoc.Test
         class TypeName : BaseClass
         {
 
-			/// <inheritdoc/>
+			/// <inheritdoc />
 			public override string DoThing() {}
         }
     }";
@@ -73,7 +74,7 @@ namespace PullThroughDoc.Test
 		}
         class TypeName : BaseClass
         {
-			/// <inheritdoc/>
+			/// <inheritdoc />
 			public override string DoThing() {}
         }
     }";
@@ -108,11 +109,11 @@ namespace PullThroughDoc.Test
 		}
         class TypeName : BaseClass
         {
-			/// <inheritdoc/>
+			/// <inheritdoc />
 			public override string DoThing() {}
         }
     }";
-			VerifyCSharpFix(test, fixtest);
+			VerifyCSharpFix(test, fixtest, 0);
 		}
 
         [TestMethod]
@@ -147,11 +148,11 @@ namespace PullThroughDoc.Test
         {
 
 
-			/// <inheritdoc/>
+			/// <inheritdoc />
 			public override string DoThing() {}
         }
     }";
-            VerifyCSharpFix(test, fixtest);
+            VerifyCSharpFix(test, fixtest, 0);
         }
 
         [TestMethod]
@@ -184,11 +185,11 @@ namespace PullThroughDoc.Test
 		}
         class TypeName : BaseClass
         {
-			/// <inheritdoc/>
+			/// <inheritdoc />
 			public override string DoThing() {}
         }
     }";
-            VerifyCSharpFix(test, fixtest);
+            VerifyCSharpFix(test, fixtest, 0);
         }
     }
 }
