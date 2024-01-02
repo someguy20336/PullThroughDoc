@@ -9,7 +9,6 @@
 
   <PropertyGroup>
     <PackageId>PullThroughDoc</PackageId>
-    <PackageVersion>1.5.0</PackageVersion>
     <Authors>Dave W</Authors>
     <PackageProjectUrl>https://github.com/someguy20336/PullThroughDoc</PackageProjectUrl>
     <PackageIconUrl></PackageIconUrl>
