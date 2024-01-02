@@ -93,6 +93,7 @@ The diagnostic is hidden and will show up if you open the quick actions lightbul
 The "base member" can be located in
   - A class in the same solution, like `MyClass.BaseMember()` (this works the best as the documentation is available in the source code)
   - An external library, like `Object.ToString()`.  This should mostly work, but does have some limitations and caveats - see [this issue](https://github.com/someguy20336/PullThroughDoc/issues/12) if you are having problems with the analyzer/code fix.  If you don't think your problem falls into any of the caveats outlined, submit a new issue.
+  - For the case in which you are trying to promote the documentation, the base member must exist in the source code of the solution.
 
 ## Installation
 
@@ -107,7 +108,7 @@ The following diagnostics are provided (with code fixes)
 - `PullThroughDoc01` - Gives you the option to insert the `<summary>` tag from the base member to the overridden member, or just use `<inheritdoc>`
 - `PullThroughDoc02` - Swaps a `<summary>` documentation with `<inheritdoc>`
 - `PullThroughDoc03` - Swaps `<inheritdoc>` to `<summary>` from the base member
-- `PullThroughDoc04` - Promotes the `<summary>` documentation from the override member to the base member and inserts `<inheritdoc>` in it's place
+- `PullThroughDoc04` - Promotes the `<summary>` documentation from the override member to the base member and inserts `<inheritdoc>` in it's place. The base member must exist in the source code of the solution.
 
 If you would like to disable any of these, use the [editor config](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/configuration-options#severity-level).  Example:
 ```
