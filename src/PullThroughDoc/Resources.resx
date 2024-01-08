@@ -126,7 +126,7 @@
     <comment>An optional longer localizable description of the diagnostic.</comment>
   </data>
   <data name="PullThroughDocMessageFormat" xml:space="preserve">
-    <value>Pull through documentation for {0}.</value>
+    <value>Pull through documentation for {0}</value>
     <comment>The format-able message the diagnostic displays.</comment>
   </data>
 </root>
