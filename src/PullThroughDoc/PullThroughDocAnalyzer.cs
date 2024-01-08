@@ -19,21 +19,21 @@ public class PullThroughDocAnalyzer : DiagnosticAnalyzer
 	private static readonly LocalizableString s_description = new LocalizableResourceString(nameof(Resources.PullThroughDocDescription), Resources.ResourceManager, typeof(Resources));
 	
 
-	private static readonly DiagnosticDescriptor s_pullThroughDocRule 
+	public static readonly DiagnosticDescriptor PullThroughDocRule 
 		= new DiagnosticDescriptor(PullThroughDocDiagId, s_title, s_messageFormat, 
 			Category, DiagnosticSeverity.Hidden, isEnabledByDefault: true, description: s_description);
 
-	private static readonly DiagnosticDescriptor s_swapToInheritDocRule
+	public static readonly DiagnosticDescriptor SwapToInheritDocRule
 		= new DiagnosticDescriptor(SwapToInheritDocId, "Replace with <inheritdoc/>", "Replace with <inheritdoc/>", 
-			Category, DiagnosticSeverity.Hidden, isEnabledByDefault: true, description: "Replace <summary> with <inheritdoc>");
+			Category, DiagnosticSeverity.Hidden, isEnabledByDefault: true, description: "Replace <summary> with <inheritdoc>.");
 
-	private static readonly DiagnosticDescriptor s_swapToPullThroughDocRule
+	public static readonly DiagnosticDescriptor SwapToPullThroughDocRule
 		= new DiagnosticDescriptor(SwapToPullThroughDocId, "Replace with base <summary>", "Replace with base <summary>", 
-			Category, DiagnosticSeverity.Hidden, isEnabledByDefault: true, description: "Change to use the <summary> tag from the base class");
+			Category, DiagnosticSeverity.Hidden, isEnabledByDefault: true, description: "Change to use the <summary> tag from the base class.");
 
 
 	public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics 
-		=> ImmutableArray.Create(s_pullThroughDocRule, s_swapToInheritDocRule, s_swapToPullThroughDocRule, PromoteDocToBaseMemberDiagnostic.Rule);
+		=> ImmutableArray.Create(PullThroughDocRule, SwapToInheritDocRule, SwapToPullThroughDocRule, PromoteDocToBaseMemberDiagnostic.Rule);
 
 	public override void Initialize(AnalysisContext context)
 	{
@@ -58,15 +58,15 @@ public class PullThroughDocAnalyzer : DiagnosticAnalyzer
 			DiagnosticDescriptor diagDesc = null;
 			if (!pullThroughInfo.HasDocComments())
 			{
-				diagDesc = s_pullThroughDocRule;
+				diagDesc = PullThroughDocRule;
 			}
 			else if (pullThroughInfo.SuggestReplaceWithInheritDoc())
 			{
-				diagDesc = s_swapToInheritDocRule;
+				diagDesc = SwapToInheritDocRule;
 			}
 			else if (pullThroughInfo.IsInheritingDoc())
 			{
-				diagDesc = s_swapToPullThroughDocRule;
+				diagDesc = SwapToPullThroughDocRule;
 			}
 
 			if (diagDesc != null)

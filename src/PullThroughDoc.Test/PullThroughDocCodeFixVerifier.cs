@@ -1,5 +1,4 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Diagnostics;
+﻿using Microsoft.CodeAnalysis.Diagnostics;
 using System;
 using TestHelper;
 
@@ -12,8 +11,8 @@ namespace PullThroughDoc.Test
 			var expectedDiagnostic = new DiagnosticResult
 			{
 				Id = PullThroughDocAnalyzer.PullThroughDocDiagId,
-				Message = String.Format("Pull through documentation for {0}.", member),
-				Severity = DiagnosticSeverity.Hidden,
+				Message = String.Format(PullThroughDocAnalyzer.PullThroughDocRule.MessageFormat.ToString(), member),
+				Severity = PullThroughDocAnalyzer.PullThroughDocRule.DefaultSeverity,
 				Locations =
 					new[] {
 							new DiagnosticResultLocation("Test0.cs", line, col)

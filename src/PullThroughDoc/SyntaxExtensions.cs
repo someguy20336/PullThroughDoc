@@ -27,12 +27,15 @@ internal static class SyntaxExtensions
 
 	public static string ToNormalizedIndentationString(this SyntaxTriviaList trivia)
 	{
-		string[] parts = trivia.ToString().Split(System.Environment.NewLine.ToCharArray(), System.StringSplitOptions.RemoveEmptyEntries);
+#pragma warning disable RS1035 // Do not use APIs banned for analyzers
+		string newLine = System.Environment.NewLine;
+#pragma warning restore RS1035 // Do not use APIs banned for analyzers
+		string[] parts = trivia.ToString().Split(newLine.ToCharArray(), System.StringSplitOptions.RemoveEmptyEntries);
 		for (int i = 0; i < parts.Length; i++)
 		{
 			parts[i] = parts[i].Trim();
 		}
-		return string.Join(System.Environment.NewLine, parts);
+		return string.Join(newLine, parts);
 	}
 
     public static IEnumerable<SyntaxTrivia> CollapseWhitespace(this IEnumerable<SyntaxTrivia> trivia)
@@ -43,7 +46,7 @@ internal static class SyntaxExtensions
         var newList = new List<SyntaxTrivia>() { triviaList[0] };
         for (int i = 1; i < triviaList.Count; i++)
         {
-            bool isDoubleWhitespace = triviaList[i - 1].Kind() == triviaList[i].Kind() && triviaList[i].IsKind(SyntaxKind.WhitespaceTrivia);
+            bool isDoubleWhitespace = triviaList[i - 1].IsKind(triviaList[i].Kind()) && triviaList[i].IsKind(SyntaxKind.WhitespaceTrivia);
             if (!isDoubleWhitespace)
             {
                 newList.Add(triviaList[i]);

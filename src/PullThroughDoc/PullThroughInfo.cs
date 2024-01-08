@@ -192,7 +192,7 @@ namespace PullThroughDoc
 			foreach (T member in members)
 			{
 				ISymbol impl = symbol.ContainingType.FindImplementationForInterfaceMember(member);
-				if (impl != null && impl.Equals(symbol))
+				if (impl != null && impl.Equals(symbol, SymbolEqualityComparer.Default))
 				{
 					return member;
 				}
