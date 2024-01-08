@@ -16,6 +16,8 @@ public class PromoteDocToBaseMemberFixProvider : CodeFixProvider
 {
 	public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(PromoteDocToBaseMemberDiagnostic.DiagnosticId);
 
+	public override FixAllProvider GetFixAllProvider() => null;  // to address RS1016
+
 	public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
 	{
 		var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
